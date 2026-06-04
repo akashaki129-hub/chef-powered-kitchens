@@ -743,7 +743,7 @@ function ChefOfWeek() {
             Meera's journey: from family kitchen to 200+ households.
           </h3>
           <p className="mt-4 text-muted-foreground">
-            “I always cooked for my family. Saavor gave me the confidence — and the tools —
+            “I always cooked for my family. Tabl gave me the confidence — and the tools —
             to cook for my city.”
           </p>
           <div className="mt-6 grid grid-cols-3 gap-4 border-t border-border pt-6 text-sm">
