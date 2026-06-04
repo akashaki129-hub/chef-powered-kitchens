@@ -806,7 +806,7 @@ function OrderNow() {
             ))}
           </ol>
           <div className="mt-8">
-            <PrimaryButton>Explore Menus →</PrimaryButton>
+            <PrimaryButton>Explore Menus</PrimaryButton>
           </div>
         </div>
       </div>
