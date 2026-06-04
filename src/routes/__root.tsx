@@ -77,9 +77,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Saavor — Choose Your Chef. Define Your Goals. Enjoy Healthy Food." },
+      { title: "Tabl — Choose Your Chef. Define Your Goals. Enjoy Healthy Food." },
       { name: "description", content: "India's chef-powered platform connecting talented cooks with people seeking healthy, trustworthy, and personalized meals." },
-      { property: "og:title", content: "Saavor — Chef-powered healthy food, made in India" },
+      { property: "og:title", content: "Tabl — Chef-powered healthy food, made in India" },
       { property: "og:description", content: "Join India's chef-powered food ecosystem. Healthy, personalized meals from verified independent chefs." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
