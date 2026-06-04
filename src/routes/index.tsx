@@ -121,6 +121,7 @@ function Landing() {
       <Solution />
       <HowItWorks />
       <Products />
+      <OrderNow />
       <Personalized />
       <BecomeAChef />
       <Ambassador />
