@@ -1172,7 +1172,7 @@ function FAQ() {
   const items = [
     {
       q: "What makes this different from food delivery apps?",
-      a: "We are not a restaurant marketplace. Saavor is a chef-powered ecosystem — every meal is cooked by a verified independent chef, designed around your goals, with full transparency.",
+      a: "We are not a restaurant marketplace. Tabl is a chef-powered ecosystem — every meal is cooked by a verified independent chef, designed around your goals, with full transparency.",
     },
     {
       q: "Can home chefs join?",
@@ -1272,9 +1272,9 @@ function Footer() {
         <div className="md:col-span-2">
           <div className="flex items-center gap-2">
             <span className="grid size-8 place-items-center rounded-xl bg-primary text-primary-foreground font-display text-lg font-bold">
-              S
+              T
             </span>
-            <span className="font-display text-xl font-semibold">Saavor</span>
+            <span className="font-display text-xl font-semibold">Tabl</span>
           </div>
           <p className="mt-4 max-w-sm text-sm text-muted-foreground">
             Empowering culinary talent. Making healthy food accessible. Launching soon in
@@ -1292,7 +1292,7 @@ function Footer() {
       </div>
       <div className="border-t border-border">
         <div className="container-x flex flex-col items-center justify-between gap-4 py-6 text-xs text-muted-foreground md:flex-row">
-          <div>© {new Date().getFullYear()} Saavor. Made in India.</div>
+          <div>© {new Date().getFullYear()} Tabl. Made in India.</div>
           <div className="flex gap-4">
             <a href="#" className="hover:text-foreground">Instagram</a>
             <a href="#" className="hover:text-foreground">LinkedIn</a>
