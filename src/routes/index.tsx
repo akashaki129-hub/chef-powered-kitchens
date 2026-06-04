@@ -10,7 +10,7 @@ import chefCooking from "@/assets/chef-cooking.jpg";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Saavor — Choose Your Chef. Define Your Goals. Enjoy Healthy Food." },
+      { title: "Tabl — Choose Your Chef. Define Your Goals. Enjoy Healthy Food." },
       {
         name: "description",
         content:
@@ -121,6 +121,7 @@ function Landing() {
       <Solution />
       <HowItWorks />
       <Products />
+      <OrderNow />
       <Personalized />
       <BecomeAChef />
       <Ambassador />
@@ -143,9 +144,9 @@ function Nav() {
       <div className="container-x flex h-16 items-center justify-between">
         <a href="#" className="flex items-center gap-2">
           <span className="grid size-8 place-items-center rounded-xl bg-primary text-primary-foreground font-display text-lg font-bold">
-            S
+            T
           </span>
-          <span className="font-display text-xl font-semibold tracking-tight">Saavor</span>
+          <span className="font-display text-xl font-semibold tracking-tight">Tabl</span>
         </a>
         <nav className="hidden items-center gap-8 text-sm text-muted-foreground md:flex">
           <a href="#mission" className="hover:text-foreground">Mission</a>
@@ -743,7 +744,7 @@ function ChefOfWeek() {
             Meera's journey: from family kitchen to 200+ households.
           </h3>
           <p className="mt-4 text-muted-foreground">
-            “I always cooked for my family. Saavor gave me the confidence — and the tools —
+            “I always cooked for my family. Tabl gave me the confidence — and the tools —
             to cook for my city.”
           </p>
           <div className="mt-6 grid grid-cols-3 gap-4 border-t border-border pt-6 text-sm">
@@ -754,6 +755,62 @@ function ChefOfWeek() {
         </div>
       </div>
     </div>
+  );
+}
+
+/* ───────── Order on Demand ───────── */
+
+function OrderNow() {
+  const steps = [
+    { t: "Browse Menus", d: "Explore dishes from verified chefs in your city." },
+    { t: "Pick Your Meal", d: "Choose a single dish, a combo, or build your own plate." },
+    { t: "Place Your Order", d: "One-tap ordering with scheduled or instant delivery." },
+    { t: "Enjoy Fresh Food", d: "Hand-delivered from the chef's kitchen to your door." },
+  ];
+  return (
+    <section className="container-x py-20 md:py-28">
+      <div className="grid items-center gap-12 md:grid-cols-2">
+        <div>
+          <Eyebrow>Order on Demand</Eyebrow>
+          <h2 className="mt-4 text-balance font-display text-3xl font-semibold leading-tight md:text-5xl">
+            Hungry now?{" "}
+            <span className="italic text-primary">Order a single meal.</span>
+          </h2>
+          <p className="mt-5 text-muted-foreground">
+            Not ready for a subscription? No problem. Browse chef menus and order exactly what you want,
+            when you want it — from a comforting homestyle thali to a chef's special creation.
+          </p>
+          <div className="mt-8 flex flex-wrap gap-2">
+            {["Single Meals", "Chef Combos", "Group Orders", "Scheduled Delivery", "Instant Delivery"].map((tag) => (
+              <span
+                key={tag}
+                className="rounded-full border border-border bg-card px-4 py-2 text-sm font-medium"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        </div>
+        <div className="rounded-3xl border border-border bg-card p-8 shadow-[var(--shadow-soft)]">
+          <ol className="space-y-6">
+            {steps.map((s, idx) => (
+              <li key={s.t} className="flex gap-4">
+                <span className="grid size-10 shrink-0 place-items-center rounded-full bg-primary/10 font-display text-sm font-semibold text-primary">
+                  {idx + 1}
+                </span>
+                <div>
+                  <div className="font-semibold">{s.t}</div>
+                  <div className="text-sm text-muted-foreground">{s.d}</div>
+                </div>
+              </li>
+            ))}
+          </ol>
+          <div className="mt-8">
+            <PrimaryButton>Explore Menus</PrimaryButton>
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -1058,7 +1115,7 @@ function Waitlist() {
             <div className="text-4xl">🎉</div>
             <h3 className="mt-4 font-display text-2xl font-semibold">You're on the list.</h3>
             <p className="mt-2 text-sm text-muted-foreground">
-              We'll be in touch as Saavor launches in your city.
+              We'll be in touch as Tabl launches in your city.
             </p>
           </div>
         ) : (
@@ -1172,7 +1229,7 @@ function FAQ() {
   const items = [
     {
       q: "What makes this different from food delivery apps?",
-      a: "We are not a restaurant marketplace. Saavor is a chef-powered ecosystem — every meal is cooked by a verified independent chef, designed around your goals, with full transparency.",
+      a: "We are not a restaurant marketplace. Tabl is a chef-powered ecosystem — every meal is cooked by a verified independent chef, designed around your goals, with full transparency.",
     },
     {
       q: "Can home chefs join?",
@@ -1272,9 +1329,9 @@ function Footer() {
         <div className="md:col-span-2">
           <div className="flex items-center gap-2">
             <span className="grid size-8 place-items-center rounded-xl bg-primary text-primary-foreground font-display text-lg font-bold">
-              S
+              T
             </span>
-            <span className="font-display text-xl font-semibold">Saavor</span>
+            <span className="font-display text-xl font-semibold">Tabl</span>
           </div>
           <p className="mt-4 max-w-sm text-sm text-muted-foreground">
             Empowering culinary talent. Making healthy food accessible. Launching soon in
@@ -1292,7 +1349,7 @@ function Footer() {
       </div>
       <div className="border-t border-border">
         <div className="container-x flex flex-col items-center justify-between gap-4 py-6 text-xs text-muted-foreground md:flex-row">
-          <div>© {new Date().getFullYear()} Saavor. Made in India.</div>
+          <div>© {new Date().getFullYear()} Tabl. Made in India.</div>
           <div className="flex gap-4">
             <a href="#" className="hover:text-foreground">Instagram</a>
             <a href="#" className="hover:text-foreground">LinkedIn</a>
