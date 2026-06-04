@@ -10,7 +10,7 @@ import chefCooking from "@/assets/chef-cooking.jpg";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Saavor — Choose Your Chef. Define Your Goals. Enjoy Healthy Food." },
+      { title: "Tabl — Choose Your Chef. Define Your Goals. Enjoy Healthy Food." },
       {
         name: "description",
         content:
@@ -143,9 +143,9 @@ function Nav() {
       <div className="container-x flex h-16 items-center justify-between">
         <a href="#" className="flex items-center gap-2">
           <span className="grid size-8 place-items-center rounded-xl bg-primary text-primary-foreground font-display text-lg font-bold">
-            S
+            T
           </span>
-          <span className="font-display text-xl font-semibold tracking-tight">Saavor</span>
+          <span className="font-display text-xl font-semibold tracking-tight">Tabl</span>
         </a>
         <nav className="hidden items-center gap-8 text-sm text-muted-foreground md:flex">
           <a href="#mission" className="hover:text-foreground">Mission</a>
@@ -1058,7 +1058,7 @@ function Waitlist() {
             <div className="text-4xl">🎉</div>
             <h3 className="mt-4 font-display text-2xl font-semibold">You're on the list.</h3>
             <p className="mt-2 text-sm text-muted-foreground">
-              We'll be in touch as Saavor launches in your city.
+              We'll be in touch as Tabl launches in your city.
             </p>
           </div>
         ) : (
