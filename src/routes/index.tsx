@@ -758,6 +758,62 @@ function ChefOfWeek() {
   );
 }
 
+/* ───────── Order on Demand ───────── */
+
+function OrderNow() {
+  const steps = [
+    { t: "Browse Menus", d: "Explore dishes from verified chefs in your city." },
+    { t: "Pick Your Meal", d: "Choose a single dish, a combo, or build your own plate." },
+    { t: "Place Your Order", d: "One-tap ordering with scheduled or instant delivery." },
+    { t: "Enjoy Fresh Food", d: "Hand-delivered from the chef's kitchen to your door." },
+  ];
+  return (
+    <section className="container-x py-20 md:py-28">
+      <div className="grid items-center gap-12 md:grid-cols-2">
+        <div>
+          <Eyebrow>Order on Demand</Eyebrow>
+          <h2 className="mt-4 text-balance font-display text-3xl font-semibold leading-tight md:text-5xl">
+            Hungry now?{" "}
+            <span className="italic text-primary">Order a single meal.</span>
+          </h2>
+          <p className="mt-5 text-muted-foreground">
+            Not ready for a subscription? No problem. Browse chef menus and order exactly what you want,
+            when you want it — from a comforting homestyle thali to a chef's special creation.
+          </p>
+          <div className="mt-8 flex flex-wrap gap-2">
+            {["Single Meals", "Chef Combos", "Group Orders", "Scheduled Delivery", "Instant Delivery"].map((tag) => (
+              <span
+                key={tag}
+                className="rounded-full border border-border bg-card px-4 py-2 text-sm font-medium"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        </div>
+        <div className="rounded-3xl border border-border bg-card p-8 shadow-[var(--shadow-soft)]">
+          <ol className="space-y-6">
+            {steps.map((s, idx) => (
+              <li key={s.t} className="flex gap-4">
+                <span className="grid size-10 shrink-0 place-items-center rounded-full bg-primary/10 font-display text-sm font-semibold text-primary">
+                  {idx + 1}
+                </span>
+                <div>
+                  <div className="font-semibold">{s.t}</div>
+                  <div className="text-sm text-muted-foreground">{s.d}</div>
+                </div>
+              </li>
+            ))}
+          </ol>
+          <div className="mt-8">
+            <PrimaryButton>Explore Menus →</PrimaryButton>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 /* ───────── Personalized Nutrition ───────── */
 
 function Personalized() {
