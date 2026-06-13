@@ -144,9 +144,7 @@ function Nav() {
     <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-md">
       <div className="container-x flex h-16 items-center justify-between">
         <a href="#" className="flex items-center gap-2">
-          <span className="grid size-8 place-items-center rounded-xl bg-primary text-primary-foreground font-display text-lg font-bold">
-            S
-          </span>
+          <img src={soruLogo} alt="Soru logo" width={32} height={32} className="size-8 object-contain" />
           <span className="font-display text-xl font-semibold tracking-tight">Soru</span>
         </a>
         <nav className="hidden items-center gap-8 text-sm text-muted-foreground md:flex">
