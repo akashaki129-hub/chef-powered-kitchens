@@ -1327,9 +1327,7 @@ function Footer() {
       <div className="container-x grid gap-10 py-14 md:grid-cols-4">
         <div className="md:col-span-2">
           <div className="flex items-center gap-2">
-            <span className="grid size-8 place-items-center rounded-xl bg-primary text-primary-foreground font-display text-lg font-bold">
-              T
-            </span>
+            <img src={soruLogo} alt="Soru logo" width={32} height={32} loading="lazy" className="size-8 object-contain" />
             <span className="font-display text-xl font-semibold">Soru</span>
           </div>
           <p className="mt-4 max-w-sm text-sm text-muted-foreground">
