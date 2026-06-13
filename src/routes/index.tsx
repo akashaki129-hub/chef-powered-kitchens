@@ -144,7 +144,7 @@ function Nav() {
       <div className="container-x flex h-16 items-center justify-between">
         <a href="#" className="flex items-center gap-2">
           <span className="grid size-8 place-items-center rounded-xl bg-primary text-primary-foreground font-display text-lg font-bold">
-            T
+            S
           </span>
           <span className="font-display text-xl font-semibold tracking-tight">Soru</span>
         </a>
