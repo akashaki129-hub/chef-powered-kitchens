@@ -10,7 +10,7 @@ import chefCooking from "@/assets/chef-cooking.jpg";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Tabl — Choose Your Chef. Define Your Goals. Enjoy Healthy Food." },
+      { title: "Soru — Choose Your Chef. Define Your Goals. Enjoy Healthy Food." },
       {
         name: "description",
         content:
@@ -146,7 +146,7 @@ function Nav() {
           <span className="grid size-8 place-items-center rounded-xl bg-primary text-primary-foreground font-display text-lg font-bold">
             T
           </span>
-          <span className="font-display text-xl font-semibold tracking-tight">Tabl</span>
+          <span className="font-display text-xl font-semibold tracking-tight">Soru</span>
         </a>
         <nav className="hidden items-center gap-8 text-sm text-muted-foreground md:flex">
           <a href="#mission" className="hover:text-foreground">Mission</a>
@@ -744,7 +744,7 @@ function ChefOfWeek() {
             Meera's journey: from family kitchen to 200+ households.
           </h3>
           <p className="mt-4 text-muted-foreground">
-            “I always cooked for my family. Tabl gave me the confidence — and the tools —
+            “I always cooked for my family. Soru gave me the confidence — and the tools —
             to cook for my city.”
           </p>
           <div className="mt-6 grid grid-cols-3 gap-4 border-t border-border pt-6 text-sm">
@@ -1115,7 +1115,7 @@ function Waitlist() {
             <div className="text-4xl">🎉</div>
             <h3 className="mt-4 font-display text-2xl font-semibold">You're on the list.</h3>
             <p className="mt-2 text-sm text-muted-foreground">
-              We'll be in touch as Tabl launches in your city.
+              We'll be in touch as Soru launches in your city.
             </p>
           </div>
         ) : (
@@ -1229,7 +1229,7 @@ function FAQ() {
   const items = [
     {
       q: "What makes this different from food delivery apps?",
-      a: "We are not a restaurant marketplace. Tabl is a chef-powered ecosystem — every meal is cooked by a verified independent chef, designed around your goals, with full transparency.",
+      a: "We are not a restaurant marketplace. Soru is a chef-powered ecosystem — every meal is cooked by a verified independent chef, designed around your goals, with full transparency.",
     },
     {
       q: "Can home chefs join?",
@@ -1331,7 +1331,7 @@ function Footer() {
             <span className="grid size-8 place-items-center rounded-xl bg-primary text-primary-foreground font-display text-lg font-bold">
               T
             </span>
-            <span className="font-display text-xl font-semibold">Tabl</span>
+            <span className="font-display text-xl font-semibold">Soru</span>
           </div>
           <p className="mt-4 max-w-sm text-sm text-muted-foreground">
             Empowering culinary talent. Making healthy food accessible. Launching soon in
@@ -1349,7 +1349,7 @@ function Footer() {
       </div>
       <div className="border-t border-border">
         <div className="container-x flex flex-col items-center justify-between gap-4 py-6 text-xs text-muted-foreground md:flex-row">
-          <div>© {new Date().getFullYear()} Tabl. Made in India.</div>
+          <div>© {new Date().getFullYear()} Soru. Made in India.</div>
           <div className="flex gap-4">
             <a href="#" className="hover:text-foreground">Instagram</a>
             <a href="#" className="hover:text-foreground">LinkedIn</a>
