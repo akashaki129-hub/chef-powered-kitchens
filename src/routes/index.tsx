@@ -6,6 +6,7 @@ import familyMeal from "@/assets/family-meal.jpg";
 import chefPortrait from "@/assets/chef-portrait.jpg";
 import professionalLunch from "@/assets/professional-lunch.jpg";
 import chefCooking from "@/assets/chef-cooking.jpg";
+import soruLogo from "@/assets/soru-logo.png";
 
 export const Route = createFileRoute("/")({
   head: () => ({
