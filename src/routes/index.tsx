@@ -6,6 +6,7 @@ import familyMeal from "@/assets/family-meal.jpg";
 import chefPortrait from "@/assets/chef-portrait.jpg";
 import professionalLunch from "@/assets/professional-lunch.jpg";
 import chefCooking from "@/assets/chef-cooking.jpg";
+import soruLogo from "@/assets/soru-logo.png";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -143,9 +144,7 @@ function Nav() {
     <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-md">
       <div className="container-x flex h-16 items-center justify-between">
         <a href="#" className="flex items-center gap-2">
-          <span className="grid size-8 place-items-center rounded-xl bg-primary text-primary-foreground font-display text-lg font-bold">
-            S
-          </span>
+          <img src={soruLogo} alt="Soru logo" width={32} height={32} className="size-8 object-contain" />
           <span className="font-display text-xl font-semibold tracking-tight">Soru</span>
         </a>
         <nav className="hidden items-center gap-8 text-sm text-muted-foreground md:flex">
@@ -1328,9 +1327,7 @@ function Footer() {
       <div className="container-x grid gap-10 py-14 md:grid-cols-4">
         <div className="md:col-span-2">
           <div className="flex items-center gap-2">
-            <span className="grid size-8 place-items-center rounded-xl bg-primary text-primary-foreground font-display text-lg font-bold">
-              T
-            </span>
+            <img src={soruLogo} alt="Soru logo" width={32} height={32} loading="lazy" className="size-8 object-contain" />
             <span className="font-display text-xl font-semibold">Soru</span>
           </div>
           <p className="mt-4 max-w-sm text-sm text-muted-foreground">
