@@ -123,6 +123,7 @@ function Landing() {
       <HowItWorks />
       <Products />
       <OrderNow />
+      <StudentLunchbox />
       <Personalized />
       <BecomeAChef />
       <Ambassador />
@@ -150,6 +151,7 @@ function Nav() {
         <nav className="hidden items-center gap-8 text-sm text-muted-foreground md:flex">
           <a href="#mission" className="hover:text-foreground">Mission</a>
           <a href="#how" className="hover:text-foreground">How it works</a>
+          <a href="#lunchbox" className="hover:text-foreground">Student Lunchbox</a>
           <a href="#chefs" className="hover:text-foreground">For Chefs</a>
           <a href="#faq" className="hover:text-foreground">FAQ</a>
         </nav>
@@ -806,6 +808,127 @@ function OrderNow() {
           </ol>
           <div className="mt-8">
             <PrimaryButton>Explore Menus</PrimaryButton>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ───────── Student Lunchbox ───────── */
+
+function StudentLunchbox() {
+  const plans = [
+    {
+      t: "Weekly Lunchbox",
+      p: "₹599/week",
+      d: "5 chef-cooked lunches, delivered fresh to school or campus.",
+      tags: ["Mon–Fri", "Balanced", "Veg / Non-Veg"],
+    },
+    {
+      t: "Monthly Saver",
+      p: "₹2,199/month",
+      d: "20 lunches with rotating menus, parent-approved nutrition.",
+      tags: ["Save 10%", "Pause anytime", "Allergy aware"],
+    },
+    {
+      t: "Daily Pick",
+      p: "From ₹139/day",
+      d: "Order day-by-day from a curated student menu — no commitment.",
+      tags: ["Order by 9am", "Hot delivery", "Snack add-ons"],
+    },
+  ];
+  const features = [
+    { i: "🎒", t: "Made for students", d: "Right-sized portions designed by chefs with parents and nutritionists in mind." },
+    { i: "🏫", t: "Delivered to campus", d: "Drop-off slots at school gates, colleges, and hostels — on time, every day." },
+    { i: "🥗", t: "Balanced & varied", d: "Rotating weekly menus so no two days look the same. Allergy filters built in." },
+    { i: "👨‍👩‍👧", t: "Parent dashboard", d: "Approve menus, set dietary rules, pause for holidays, pay once a month." },
+  ];
+  return (
+    <section id="lunchbox" className="relative overflow-hidden border-y border-border bg-secondary/40 py-20 md:py-28">
+      <div className="container-x">
+        <SectionHeading
+          eyebrow="Student Lunchbox"
+          title={
+            <>
+              Healthy lunchboxes for{" "}
+              <span className="italic text-primary">school & college</span> students.
+            </>
+          }
+          intro="Chef-cooked, freshly delivered lunchboxes for students — with subscription plans, daily picks, and group orders for institutions."
+        />
+
+        <div className="mt-12 grid gap-5 md:grid-cols-3">
+          {plans.map((p) => (
+            <Card key={p.t}>
+              <div className="text-xs font-medium uppercase tracking-widest text-primary">{p.p}</div>
+              <h3 className="mt-2 font-display text-xl font-semibold">{p.t}</h3>
+              <p className="mt-2 text-sm text-muted-foreground">{p.d}</p>
+              <div className="mt-6 flex flex-wrap gap-2">
+                {p.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="rounded-full bg-secondary px-2.5 py-1 text-xs text-muted-foreground"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </Card>
+          ))}
+        </div>
+
+        <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {features.map((f) => (
+            <div
+              key={f.t}
+              className="rounded-2xl border border-border bg-card p-5 shadow-[var(--shadow-soft)]"
+            >
+              <div className="text-2xl">{f.i}</div>
+              <h4 className="mt-3 font-semibold">{f.t}</h4>
+              <p className="mt-1 text-sm text-muted-foreground">{f.d}</p>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-12 grid gap-6 rounded-3xl border border-border bg-card p-8 shadow-[var(--shadow-soft)] md:grid-cols-[1.2fr_1fr] md:p-10">
+          <div>
+            <Eyebrow>For Schools & Colleges</Eyebrow>
+            <h3 className="mt-4 font-display text-2xl font-semibold md:text-3xl">
+              Bulk lunchbox programs for{" "}
+              <span className="italic text-[color:var(--leaf)]">institutions.</span>
+            </h3>
+            <p className="mt-3 text-muted-foreground">
+              Partner with Soru to run a daily lunch program for your students. Verified chefs,
+              hygiene-audited kitchens, custom menus, and consolidated monthly billing.
+            </p>
+            <ul className="mt-5 space-y-2 text-sm">
+              {[
+                "Custom menus reviewed by a nutritionist",
+                "Single point of contact & monthly invoicing",
+                "Real-time delivery tracking for the admin team",
+                "Pilot programs available for 50+ students",
+              ].map((i) => (
+                <li key={i} className="flex gap-2">
+                  <span className="mt-2 size-1.5 shrink-0 rounded-full bg-primary" />
+                  <span>{i}</span>
+                </li>
+              ))}
+            </ul>
+            <div className="mt-7 flex flex-wrap gap-3">
+              <PrimaryButton href="#waitlist">Start a Lunchbox Plan</PrimaryButton>
+              <GhostButton href="#waitlist">Partner Your Institution</GhostButton>
+            </div>
+          </div>
+          <div className="overflow-hidden rounded-2xl border border-border">
+            <img
+              src={professionalLunch}
+              alt="Student lunchbox with balanced meal"
+              loading="lazy"
+              width={1024}
+              height={1024}
+              className="size-full object-cover"
+            />
           </div>
         </div>
       </div>
