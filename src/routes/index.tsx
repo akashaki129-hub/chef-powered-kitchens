@@ -152,15 +152,17 @@ function Nav() {
           <a href="#mission" className="hover:text-foreground">Mission</a>
           <a href="#how" className="hover:text-foreground">How it works</a>
           <a href="#lunchbox" className="hover:text-foreground">Student Lunchbox</a>
-          <a href="#chefs" className="hover:text-foreground">For Chefs</a>
+          <a href="/join-as-chef" className="hover:text-foreground">For Chefs</a>
           <a href="#faq" className="hover:text-foreground">FAQ</a>
         </nav>
-        <a
-          href="#waitlist"
-          className="rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition hover:brightness-105"
-        >
-          Join Waitlist
-        </a>
+        <div className="flex items-center gap-2">
+          <a href="/join-as-chef" className="hidden rounded-full border border-border px-4 py-2 text-sm font-medium hover:bg-muted md:inline-block">
+            Become a Chef
+          </a>
+          <a href="/enroll" className="rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition hover:brightness-105">
+            Join as Customer
+          </a>
+        </div>
       </div>
     </header>
   );
