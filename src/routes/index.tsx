@@ -3,7 +3,7 @@ import { useState } from "react";
 import heroChef from "@/assets/hero-chef.jpg";
 import healthyThali from "@/assets/healthy-thali.jpg";
 import familyMeal from "@/assets/family-meal.jpg";
-import chefPortrait from "@/assets/chef-portrait.jpg";
+
 import professionalLunch from "@/assets/professional-lunch.jpg";
 import chefCooking from "@/assets/chef-cooking.jpg";
 import soruLogo from "@/assets/soru-logo.png";
