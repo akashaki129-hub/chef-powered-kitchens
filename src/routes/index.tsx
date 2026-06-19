@@ -117,19 +117,13 @@ function Landing() {
       <Hero />
       <Marquee />
       <Mission />
-      <Vision />
-      <Problem />
       <Solution />
       <HowItWorks />
       <Products />
       <OrderNow />
       <StudentLunchbox />
-      <Personalized />
       <BecomeAChef />
-      <Ambassador />
       <FoodLicense />
-      <Impact />
-      <Cities />
       <Waitlist />
       <FAQ />
       <FinalCTA />
