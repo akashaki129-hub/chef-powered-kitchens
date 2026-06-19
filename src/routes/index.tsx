@@ -446,158 +446,42 @@ function StepsColumn({
 function Products() {
   return (
     <section className="bg-secondary/40 py-20 md:py-28">
-      <div className="container-x space-y-16">
-        {/* Subscriptions */}
-        <div>
-          <SectionHeading
-            eyebrow="Subscriptions"
-            title={
-              <>
-                Pick a plan that fits{" "}
-                <span className="italic text-primary">your day.</span>
-              </>
-            }
-          />
-          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {[
-              { t: "Breakfast Plans", d: "Energising mornings, chef-made.", p: "From ₹89/meal" },
-              { t: "Lunch Plans", d: "Office-ready, balanced lunches.", p: "From ₹129/meal" },
-              { t: "Dinner Plans", d: "Light, wholesome evenings.", p: "From ₹149/meal" },
-              { t: "Full-Day Plans", d: "Breakfast, lunch & dinner — sorted.", p: "From ₹329/day" },
-            ].map((p) => (
-              <Card key={p.t}>
-                <div className="text-xs font-medium uppercase tracking-widest text-primary">
-                  {p.p}
-                </div>
-                <h3 className="mt-2 font-display text-xl font-semibold">{p.t}</h3>
-                <p className="mt-2 text-sm text-muted-foreground">{p.d}</p>
-                <div className="mt-6 flex flex-wrap gap-2">
-                  {["High Protein", "Veg", "Family"].map((tag) => (
-                    <span
-                      key={tag}
-                      className="rounded-full bg-secondary px-2.5 py-1 text-xs text-muted-foreground"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </Card>
-            ))}
-          </div>
-        </div>
-
-        {/* Categories */}
-        <div>
-          <SectionHeading eyebrow="Categories" title={<>Cook your way through India.</>} />
-          <div className="mt-8 flex flex-wrap gap-3">
-            {[
-              "Home Style Meals",
-              "High Protein Meals",
-              "Vegetarian Plans",
-              "Regional Cuisine",
-              "Weight Loss Plans",
-              "Family Plans",
-            ].map((c) => (
-              <span
-                key={c}
-                className="rounded-full border border-border bg-card px-4 py-2 text-sm font-medium"
-              >
-                {c}
-              </span>
-            ))}
-          </div>
-        </div>
-
-        {/* Today's specials */}
-        <div>
-          <SectionHeading
-            eyebrow="Today's Specials"
-            title={
-              <>
-                Chef-created.{" "}
-                <span className="italic text-primary">Available now.</span>
-              </>
-            }
-          />
-          <div className="mt-10 grid gap-5 md:grid-cols-3">
-            {[
-              { t: "Signature Ghee Roast", c: "Mangalorean", chef: "Ravi N.", img: healthyThali },
-              { t: "Monsoon Khichdi Bowl", c: "North Indian", chef: "Anita V.", img: familyMeal },
-              { t: "Festival Sweets Box", c: "Bengali", chef: "Sourav D.", img: chefCooking },
-            ].map((s) => (
-              <article
-                key={s.t}
-                className="overflow-hidden rounded-3xl border border-border bg-card shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5"
-              >
-                <div className="aspect-[4/3] overflow-hidden">
-                  <img
-                    src={s.img}
-                    alt={s.t}
-                    loading="lazy"
-                    width={800}
-                    height={600}
-                    className="size-full object-cover transition group-hover:scale-105"
-                  />
-                </div>
-                <div className="p-5">
-                  <div className="text-xs uppercase tracking-widest text-muted-foreground">
-                    {s.c}
-                  </div>
-                  <h3 className="mt-1 font-display text-xl font-semibold">{s.t}</h3>
-                  <div className="mt-2 text-sm text-muted-foreground">by {s.chef}</div>
-                </div>
-              </article>
-            ))}
-          </div>
-        </div>
-
-        {/* Top Rated Chefs */}
-        <div>
-          <SectionHeading
-            eyebrow="Top Rated Chefs"
-            title={<>The people behind the plate.</>}
-          />
-          <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {[
-              { n: "Priya R.", c: "South Indian", r: 4.9, m: "1.2k", img: heroChef },
-              { n: "Meera K.", c: "Home Style", r: 4.8, m: "980", img: chefPortrait },
-              { n: "Ravi N.", c: "Coastal", r: 4.9, m: "1.5k", img: chefCooking },
-              { n: "Anita V.", c: "North Indian", r: 4.7, m: "760", img: familyMeal },
-            ].map((c) => (
-              <div
-                key={c.n}
-                className="overflow-hidden rounded-3xl border border-border bg-card shadow-[var(--shadow-soft)]"
-              >
-                <div className="aspect-[4/5] overflow-hidden">
-                  <img
-                    src={c.img}
-                    alt={c.n}
-                    loading="lazy"
-                    width={400}
-                    height={500}
-                    className="size-full object-cover"
-                  />
-                </div>
-                <div className="p-4">
-                  <div className="flex items-center justify-between">
-                    <div className="font-display text-lg font-semibold">{c.n}</div>
-                    <span className="rounded-full bg-[color:var(--leaf)]/10 px-2 py-0.5 text-xs font-medium text-[color:var(--leaf)]">
-                      ✓ Verified
-                    </span>
-                  </div>
-                  <div className="text-sm text-muted-foreground">{c.c}</div>
-                  <div className="mt-3 flex items-center justify-between text-sm">
-                    <span><span className="text-[color:var(--spice)]">★</span> {c.r}</span>
-                    <span className="text-muted-foreground">{c.m} meals</span>
-                  </div>
-                </div>
+      <div className="container-x">
+        <SectionHeading
+          eyebrow="Subscriptions"
+          title={
+            <>
+              Pick a plan that fits{" "}
+              <span className="italic text-primary">your day.</span>
+            </>
+          }
+        />
+        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {[
+            { t: "Breakfast Plans", d: "Energising mornings, chef-made.", p: "From ₹89/meal" },
+            { t: "Lunch Plans", d: "Office-ready, balanced lunches.", p: "From ₹129/meal" },
+            { t: "Dinner Plans", d: "Light, wholesome evenings.", p: "From ₹149/meal" },
+            { t: "Full-Day Plans", d: "Breakfast, lunch & dinner — sorted.", p: "From ₹329/day" },
+          ].map((p) => (
+            <Card key={p.t}>
+              <div className="text-xs font-medium uppercase tracking-widest text-primary">
+                {p.p}
               </div>
-            ))}
-          </div>
+              <h3 className="mt-2 font-display text-xl font-semibold">{p.t}</h3>
+              <p className="mt-2 text-sm text-muted-foreground">{p.d}</p>
+              <div className="mt-6 flex flex-wrap gap-2">
+                {["High Protein", "Veg", "Family"].map((tag) => (
+                  <span
+                    key={tag}
+                    className="rounded-full bg-secondary px-2.5 py-1 text-xs text-muted-foreground"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </Card>
+          ))}
         </div>
-
-        {/* Chef of the Week */}
-        <ChefOfWeek />
       </div>
     </section>
   );
