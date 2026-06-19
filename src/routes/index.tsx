@@ -323,12 +323,8 @@ function Solution() {
     { t: "Personalized Nutrition Plans", d: "Designed around your goals, not menus.", i: "🎯" },
     { t: "Verified Independent Chefs", d: "Every chef is vetted and profile-verified.", i: "✅" },
     { t: "Meal Subscriptions", d: "Breakfast, lunch, dinner, or full-day.", i: "📅" },
-    { t: "Chef Specials Marketplace", d: "Signature dishes & seasonal menus.", i: "✨" },
-    { t: "Food Business Opportunities", d: "From a single tiffin to a real food brand.", i: "📈" },
-    { t: "Kitchen Verification", d: "Hygiene & standards reviewed on-ground.", i: "🏠" },
     { t: "Food License Guidance", d: "FSSAI & compliance, handheld.", i: "📜" },
-    { t: "Chef Growth Tools", d: "Insights, pricing & customer messaging.", i: "🛠️" },
-    { t: "Community & Trust", d: "Real reviews from real households.", i: "❤️" },
+    { t: "Kitchen Verification", d: "Hygiene & standards reviewed on-ground.", i: "🏠" },
   ];
   return (
     <section className="bg-secondary/50 py-20 md:py-28">
