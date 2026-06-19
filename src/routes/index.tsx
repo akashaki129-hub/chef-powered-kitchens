@@ -323,124 +323,6 @@ function Mission() {
 
 /* ───────── Vision ───────── */
 
-function Vision() {
-  const points = [
-    "Every talented cook can earn from their skills.",
-    "Healthy food is easier to access than unhealthy food.",
-    "Customers know who prepares their meals.",
-    "Independent chefs can build successful food brands.",
-    "Technology creates trust between chefs and customers.",
-  ];
-  return (
-    <section className="relative overflow-hidden bg-[color:var(--ink)] text-[color:var(--cream)]">
-      <div className="container-x grid items-center gap-12 py-20 md:grid-cols-2 md:py-28">
-        <div>
-          <div className="inline-flex items-center gap-2 rounded-full border border-white/15 px-3 py-1 text-xs uppercase tracking-[0.18em] text-white/70">
-            <span className="size-1.5 rounded-full bg-[color:var(--spice)]" /> Our Vision
-          </div>
-          <h2 className="mt-4 text-balance font-display text-3xl font-semibold leading-tight md:text-5xl">
-            Building India's largest community of{" "}
-            <span className="italic text-[color:var(--spice)]">independent chefs.</span>
-          </h2>
-          <ul className="mt-8 space-y-4">
-            {points.map((p) => (
-              <li key={p} className="flex gap-3 text-white/85">
-                <span className="mt-2 size-1.5 shrink-0 rounded-full bg-[color:var(--spice)]" />
-                <span>{p}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div className="relative">
-          <div className="aspect-[4/5] overflow-hidden rounded-[2rem] border border-white/10">
-            <img
-              src={chefPortrait}
-              alt="Indian homemaker chef"
-              loading="lazy"
-              width={1024}
-              height={1280}
-              className="size-full object-cover"
-            />
-          </div>
-          <div className="absolute -bottom-4 -left-4 rounded-2xl bg-[color:var(--cream)] p-4 text-[color:var(--ink)] shadow-[var(--shadow-glow)]">
-            <div className="font-display text-2xl font-semibold">Meera, 42</div>
-            <div className="text-xs text-muted-foreground">Founding chef · Bengaluru</div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ───────── Problem ───────── */
-
-function Problem() {
-  const customers = [
-    "Rising dependence on processed food",
-    "Lack of trust in food preparation",
-    "Expensive healthy food options",
-    "Limited personalized meal choices",
-    "Repetitive food subscriptions",
-  ];
-  const chefs = [
-    "Difficulty finding customers",
-    "Limited visibility",
-    "High business startup costs",
-    "Lack of digital tools",
-    "Compliance and licensing challenges",
-  ];
-  return (
-    <section className="container-x py-20 md:py-28">
-      <SectionHeading
-        align="center"
-        eyebrow="Why we exist"
-        title={
-          <>
-            Two problems.{" "}
-            <span className="italic text-primary">One platform.</span>
-          </>
-        }
-      />
-      <div className="mt-14 grid gap-6 md:grid-cols-2">
-        <ProblemCol title="For Customers" items={customers} tone="primary" />
-        <ProblemCol title="For Chefs" items={chefs} tone="leaf" />
-      </div>
-    </section>
-  );
-}
-
-function ProblemCol({
-  title,
-  items,
-  tone,
-}: {
-  title: string;
-  items: string[];
-  tone: "primary" | "leaf";
-}) {
-  const color = tone === "primary" ? "bg-primary" : "bg-[color:var(--leaf)]";
-  return (
-    <div className="rounded-3xl border border-border bg-card p-8 shadow-[var(--shadow-soft)]">
-      <div className="flex items-center gap-3">
-        <span className={`size-2.5 rounded-full ${color}`} />
-        <h3 className="font-display text-2xl font-semibold">{title}</h3>
-      </div>
-      <ul className="mt-6 divide-y divide-border">
-        {items.map((i, idx) => (
-          <li key={i} className="flex items-start gap-4 py-4">
-            <span className="mt-1 w-6 text-sm font-medium text-muted-foreground">
-              0{idx + 1}
-            </span>
-            <span className="text-base">{i}</span>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
-
-/* ───────── Solution ───────── */
-
 function Solution() {
   const items = [
     { t: "Healthy Home-Style Meals", d: "Made the way it should be — at home, by a chef.", i: "🍲" },
@@ -727,42 +609,6 @@ function Products() {
   );
 }
 
-function ChefOfWeek() {
-  return (
-    <div className="overflow-hidden rounded-[2rem] border border-border bg-card shadow-[var(--shadow-soft)]">
-      <div className="grid md:grid-cols-2">
-        <div className="aspect-[4/5] md:aspect-auto">
-          <img
-            src={chefPortrait}
-            alt="Chef of the week"
-            loading="lazy"
-            width={800}
-            height={1000}
-            className="size-full object-cover"
-          />
-        </div>
-        <div className="p-8 md:p-12">
-          <Eyebrow>Chef of the Week</Eyebrow>
-          <h3 className="mt-4 font-display text-3xl font-semibold md:text-4xl">
-            Meera's journey: from family kitchen to 200+ households.
-          </h3>
-          <p className="mt-4 text-muted-foreground">
-            “I always cooked for my family. Soru gave me the confidence — and the tools —
-            to cook for my city.”
-          </p>
-          <div className="mt-6 grid grid-cols-3 gap-4 border-t border-border pt-6 text-sm">
-            <Stat k="200+" v="Customers served" />
-            <Stat k="4.9★" v="Avg. rating" />
-            <Stat k="14" v="Signature dishes" />
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* ───────── Order on Demand ───────── */
-
 function OrderNow() {
   const steps = [
     { t: "Browse Menus", d: "Explore dishes from verified chefs in your city." },
@@ -940,58 +786,6 @@ function StudentLunchbox() {
 
 /* ───────── Personalized Nutrition ───────── */
 
-function Personalized() {
-  const goals = [
-    "Weight Loss",
-    "Weight Gain",
-    "High Protein",
-    "Vegetarian",
-    "Diabetic-Friendly",
-    "Family Nutrition",
-  ];
-  return (
-    <section className="container-x py-20 md:py-28">
-      <div className="grid items-center gap-12 md:grid-cols-2">
-        <div>
-          <Eyebrow>Personalized Nutrition</Eyebrow>
-          <h2 className="mt-4 text-balance font-display text-3xl font-semibold leading-tight md:text-5xl">
-            Food designed around{" "}
-            <span className="italic text-primary">your goals.</span>
-          </h2>
-          <p className="mt-5 text-muted-foreground">
-            You share your goals. Chefs design meal plans. The platform handles the rest —
-            scheduling, delivery, feedback and iteration.
-          </p>
-          <div className="mt-8 flex flex-wrap gap-2">
-            {goals.map((g) => (
-              <span
-                key={g}
-                className="rounded-full border border-border bg-card px-4 py-2 text-sm font-medium"
-              >
-                {g}
-              </span>
-            ))}
-          </div>
-        </div>
-        <div className="relative">
-          <div className="aspect-[4/3] overflow-hidden rounded-[2rem] border border-border">
-            <img
-              src={healthyThali}
-              alt="Personalized healthy meal"
-              loading="lazy"
-              width={1280}
-              height={960}
-              className="size-full object-cover"
-            />
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ───────── Become a Chef ───────── */
-
 function BecomeAChef() {
   const benefits = [
     "Access Customers",
@@ -1067,45 +861,6 @@ function BecomeAChef() {
 
 /* ───────── Ambassador ───────── */
 
-function Ambassador() {
-  const benefits = [
-    { t: "Early Access", d: "Be first on the platform." },
-    { t: "Featured Visibility", d: "Spotlight on homepage & app." },
-    { t: "Community Recognition", d: "Founding-Chef badge for life." },
-    { t: "Growth Opportunities", d: "Co-created menus & marketing." },
-    { t: "Priority Support", d: "Dedicated onboarding manager." },
-  ];
-  return (
-    <section className="container-x py-20 md:py-28">
-      <SectionHeading
-        align="center"
-        eyebrow="Founding Chef Ambassador Program"
-        title={
-          <>
-            Become a{" "}
-            <span className="italic text-primary">founding chef ambassador.</span>
-          </>
-        }
-        intro="We are inviting a limited number of chefs across Bengaluru, Chennai, and Hyderabad to help shape the future of healthy food and culinary entrepreneurship."
-      />
-      <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
-        {benefits.map((b, i) => (
-          <div
-            key={b.t}
-            className="rounded-2xl border border-border bg-card p-6 shadow-[var(--shadow-soft)]"
-          >
-            <div className="font-display text-xs text-muted-foreground">0{i + 1}</div>
-            <h3 className="mt-2 font-semibold">{b.t}</h3>
-            <p className="mt-2 text-sm text-muted-foreground">{b.d}</p>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-/* ───────── Food License ───────── */
-
 function FoodLicense() {
   const features = [
     "FSSAI Guidance",
@@ -1146,73 +901,6 @@ function FoodLicense() {
 }
 
 /* ───────── Impact ───────── */
-
-function Impact() {
-  const cards = [
-    { e: "👩‍🍳", t: "Empowering Homemakers" },
-    { e: "🎓", t: "Supporting Culinary Students" },
-    { e: "🥗", t: "Making Healthy Food Accessible" },
-    { e: "💼", t: "Creating New Income Opportunities" },
-    { e: "🏠", t: "Supporting Local Food Businesses" },
-    { e: "❤️", t: "Building Trust Through Transparency" },
-  ];
-  return (
-    <section className="container-x py-20 md:py-28">
-      <SectionHeading
-        align="center"
-        title={
-          <>
-            Creating impact{" "}
-            <span className="italic text-primary">beyond food.</span>
-          </>
-        }
-      />
-      <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {cards.map((c) => (
-          <div
-            key={c.t}
-            className="rounded-3xl border border-border bg-card p-8 text-center shadow-[var(--shadow-soft)]"
-          >
-            <div className="text-4xl">{c.e}</div>
-            <div className="mt-4 font-display text-lg font-semibold">{c.t}</div>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-/* ───────── Cities ───────── */
-
-function Cities() {
-  return (
-    <section className="bg-[color:var(--ink)] py-20 text-[color:var(--cream)] md:py-28">
-      <div className="container-x text-center">
-        <Eyebrow>Launch Cities</Eyebrow>
-        <h2 className="mx-auto mt-4 max-w-2xl text-balance font-display text-3xl font-semibold leading-tight md:text-5xl">
-          Starting in three cities.{" "}
-          <span className="italic text-[color:var(--spice)]">Cooking for India next.</span>
-        </h2>
-        <p className="mx-auto mt-4 max-w-xl text-white/70">
-          Launching first in Bengaluru, Chennai and Hyderabad, with plans for nationwide expansion.
-        </p>
-        <div className="mt-12 grid gap-6 sm:grid-cols-3">
-          {["Bengaluru", "Chennai", "Hyderabad"].map((c) => (
-            <div
-              key={c}
-              className="rounded-3xl border border-white/15 bg-white/[0.04] p-10 transition hover:bg-white/[0.08]"
-            >
-              <div className="font-display text-3xl font-semibold">{c}</div>
-              <div className="mt-2 text-sm text-white/60">Pilot launch</div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ───────── Waitlist ───────── */
 
 function Waitlist() {
   const [submitted, setSubmitted] = useState(false);
