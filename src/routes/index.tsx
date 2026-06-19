@@ -915,15 +915,7 @@ function FAQ() {
   const items = [
     {
       q: "What makes this different from food delivery apps?",
-      a: "We are not a restaurant marketplace. Soru is a chef-powered ecosystem — every meal is cooked by a verified independent chef, designed around your goals, with full transparency.",
-    },
-    {
-      q: "Can home chefs join?",
-      a: "Yes. Homemakers, home chefs, culinary students, professional chefs and caterers are all welcome to apply.",
-    },
-    {
-      q: "How does chef verification work?",
-      a: "We verify chef identity, kitchen hygiene standards and culinary skill through a structured on-ground and remote review process.",
+      a: "Soru is a chef-powered ecosystem — every meal is cooked by a verified independent chef, designed around your goals, with full transparency.",
     },
     {
       q: "Do chefs need food registrations?",
@@ -931,11 +923,7 @@ function FAQ() {
     },
     {
       q: "How do personalized meal plans work?",
-      a: "Customers share their goals (e.g. weight loss, high protein). Chefs design meal plans, and the platform manages scheduling, delivery and feedback.",
-    },
-    {
-      q: "Can I subscribe monthly?",
-      a: "Yes — weekly and monthly subscriptions across breakfast, lunch, dinner and full-day plans.",
+      a: "Customers share their goals. Chefs design meal plans, and the platform manages scheduling, delivery and feedback.",
     },
     {
       q: "Which cities are launching first?",
