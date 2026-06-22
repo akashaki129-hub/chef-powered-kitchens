@@ -21,6 +21,7 @@ import healthyThali from "@/assets/healthy-thali.jpg";
 import professionalLunch from "@/assets/professional-lunch.jpg";
 import chefCooking from "@/assets/chef-cooking.jpg";
 import { BrandLogo } from "@/components/brand-logo";
+import { MarketFeedbackSurvey } from "@/components/market-feedback-survey";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -127,6 +128,7 @@ function Landing() {
         <Enrollment />
       </main>
       <Footer />
+      <MarketFeedbackSurvey />
     </div>
   );
 }
@@ -183,6 +185,16 @@ function Hero() {
             <CTA href="/join-as-chef" secondary>
               Build your chef business
             </CTA>
+          </div>
+          <div className="mt-5">
+            <p className="font-display text-lg font-medium text-white md:text-xl">
+              Meals from <span className="text-[color:var(--saffron)]">₹99/order</span>
+              <span className="mx-2 text-white/25">·</span>
+              Monthly plans from <span className="text-[color:var(--saffron)]">₹2,999*</span>
+            </p>
+            <p className="mt-1.5 max-w-xl text-xs leading-5 text-white/42">
+              *Starting prices vary by chef, menu, meal frequency, and delivery location.
+            </p>
           </div>
           <div className="mt-12 flex flex-wrap gap-x-8 gap-y-4 border-t border-white/12 pt-6 text-sm text-white/60">
             <TrustLine icon={Sparkles}>Personalized nutrition plans</TrustLine>

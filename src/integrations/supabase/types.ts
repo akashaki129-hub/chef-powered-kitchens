@@ -68,6 +68,54 @@ export type Database = {
         };
         Relationships: [];
       };
+      market_research_responses: {
+        Row: {
+          audience: string;
+          chef_start_timeline: string | null;
+          chef_support_needs: string[];
+          city: string;
+          client_submission_id: string;
+          comments: string | null;
+          contact: string | null;
+          created_at: string;
+          customer_monthly_budget: string | null;
+          customer_order_frequency: string | null;
+          id: string;
+          source: string;
+          statements: string[];
+        };
+        Insert: {
+          audience: string;
+          chef_start_timeline?: string | null;
+          chef_support_needs?: string[];
+          city: string;
+          client_submission_id: string;
+          comments?: string | null;
+          contact?: string | null;
+          created_at?: string;
+          customer_monthly_budget?: string | null;
+          customer_order_frequency?: string | null;
+          id?: string;
+          source?: string;
+          statements: string[];
+        };
+        Update: {
+          audience?: string;
+          chef_start_timeline?: string | null;
+          chef_support_needs?: string[];
+          city?: string;
+          client_submission_id?: string;
+          comments?: string | null;
+          contact?: string | null;
+          created_at?: string;
+          customer_monthly_budget?: string | null;
+          customer_order_frequency?: string | null;
+          id?: string;
+          source?: string;
+          statements?: string[];
+        };
+        Relationships: [];
+      };
       waitlist_entries: {
         Row: {
           city: string;
