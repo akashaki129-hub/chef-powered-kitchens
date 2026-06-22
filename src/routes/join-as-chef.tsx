@@ -3,12 +3,16 @@ import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { z } from "zod";
+import { BrandLogo } from "@/components/brand-logo";
 
 export const Route = createFileRoute("/join-as-chef")({
   head: () => ({
     meta: [
       { title: "Become a Soru Chef — Chef Enrollment" },
-      { name: "description", content: "Join Soru as a chef, homemaker, culinary student, or professional cook." },
+      {
+        name: "description",
+        content: "Join Soru as a chef, homemaker, culinary student, or professional cook.",
+      },
     ],
   }),
   component: ChefEnrollPage,
@@ -27,10 +31,17 @@ const schema = z.object({
   phone: z.string().trim().min(7, "Valid phone required").max(20),
   email: z.string().trim().email("Valid email required").max(255),
   role: z.enum(["chef", "homemaker", "culinary_student", "professional_chef", "freelancer"]),
+  comments: z.string().trim().max(1500, "Please keep your note under 1,500 characters").optional(),
 });
 
 function ChefEnrollPage() {
-  const [form, setForm] = useState({ name: "", phone: "", email: "", role: "" as "" | typeof roleOptions[number]["value"] });
+  const [form, setForm] = useState({
+    name: "",
+    phone: "",
+    email: "",
+    role: "" as "" | (typeof roleOptions)[number]["value"],
+    comments: "",
+  });
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
 
@@ -42,7 +53,10 @@ function ChefEnrollPage() {
       return;
     }
     setLoading(true);
-    const { error } = await supabase.from("chef_enrollments").insert(parsed.data);
+    const { error } = await supabase.from("chef_enrollments").insert({
+      ...parsed.data,
+      comments: parsed.data.comments || null,
+    });
     setLoading(false);
     if (error) {
       toast.error("Could not submit. Please try again.");
@@ -50,14 +64,16 @@ function ChefEnrollPage() {
     }
     setDone(true);
     toast.success("Welcome aboard! We'll reach out shortly.");
-    setForm({ name: "", phone: "", email: "", role: "" });
+    setForm({ name: "", phone: "", email: "", role: "", comments: "" });
   }
 
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border/60">
         <div className="container-x flex h-16 items-center justify-between">
-          <Link to="/" className="font-display text-xl font-semibold">Soru</Link>
+          <Link to="/" aria-label="Sōru home">
+            <BrandLogo />
+          </Link>
           <Link to="/enroll" className="text-sm text-muted-foreground hover:text-foreground">
             Are you a customer? →
           </Link>
@@ -88,15 +104,38 @@ function ChefEnrollPage() {
               </button>
             </div>
           ) : (
-            <form onSubmit={onSubmit} className="mt-10 space-y-5 rounded-2xl border border-border bg-card p-6 md:p-8">
+            <form
+              onSubmit={onSubmit}
+              className="mt-10 space-y-5 rounded-2xl border border-border bg-card p-6 md:p-8"
+            >
               <Field label="Full name">
-                <input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="input" placeholder="Your name" />
+                <input
+                  required
+                  value={form.name}
+                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                  className="input"
+                  placeholder="Your name"
+                />
               </Field>
               <Field label="Phone number">
-                <input required type="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="input" placeholder="+91 98765 43210" />
+                <input
+                  required
+                  type="tel"
+                  value={form.phone}
+                  onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                  className="input"
+                  placeholder="+91 98765 43210"
+                />
               </Field>
               <Field label="Email address">
-                <input required type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="input" placeholder="you@email.com" />
+                <input
+                  required
+                  type="email"
+                  value={form.email}
+                  onChange={(e) => setForm({ ...form, email: e.target.value })}
+                  className="input"
+                  placeholder="you@email.com"
+                />
               </Field>
               <Field label="I am a…">
                 <select
@@ -106,8 +145,21 @@ function ChefEnrollPage() {
                   className="input"
                 >
                   <option value="">Select your role…</option>
-                  {roleOptions.map((r) => <option key={r.value} value={r.value}>{r.label}</option>)}
+                  {roleOptions.map((r) => (
+                    <option key={r.value} value={r.value}>
+                      {r.label}
+                    </option>
+                  ))}
                 </select>
+              </Field>
+              <Field label="What would you like to share with Sōru? (optional)">
+                <textarea
+                  value={form.comments}
+                  onChange={(e) => setForm({ ...form, comments: e.target.value })}
+                  className="input min-h-28 resize-y"
+                  maxLength={1500}
+                  placeholder="Tell us about your cooking, goals, support you need, or anything else you'd like us to know."
+                />
               </Field>
               <button
                 type="submit"
@@ -125,15 +177,15 @@ function ChefEnrollPage() {
         .input {
           width: 100%;
           border-radius: 0.75rem;
-          border: 1px solid hsl(var(--border));
-          background: hsl(var(--background));
+          border: 1px solid var(--border);
+          background: var(--background);
           padding: 0.7rem 0.9rem;
           font-size: 0.95rem;
-          color: hsl(var(--foreground));
+          color: var(--foreground);
           outline: none;
           transition: border-color .15s ease, box-shadow .15s ease;
         }
-        .input:focus { border-color: hsl(var(--primary)); box-shadow: 0 0 0 3px hsl(var(--primary) / 0.15); }
+        .input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px color-mix(in oklab, var(--primary) 18%, transparent); }
       `}</style>
     </div>
   );
