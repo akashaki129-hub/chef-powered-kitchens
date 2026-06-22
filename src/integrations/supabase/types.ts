@@ -116,6 +116,78 @@ export type Database = {
         };
         Relationships: [];
       };
+      notification_events: {
+        Row: {
+          attempts: number;
+          created_at: string;
+          dedupe_key: string;
+          email_status: string;
+          event_type: string;
+          id: string;
+          last_error: string | null;
+          next_attempt_at: string;
+          payload: Json;
+          processed_at: string | null;
+          record_id: string | null;
+          whatsapp_status: string;
+        };
+        Insert: {
+          attempts?: number;
+          created_at?: string;
+          dedupe_key: string;
+          email_status?: string;
+          event_type: string;
+          id?: string;
+          last_error?: string | null;
+          next_attempt_at?: string;
+          payload: Json;
+          processed_at?: string | null;
+          record_id?: string | null;
+          whatsapp_status?: string;
+        };
+        Update: {
+          attempts?: number;
+          created_at?: string;
+          dedupe_key?: string;
+          email_status?: string;
+          event_type?: string;
+          id?: string;
+          last_error?: string | null;
+          next_attempt_at?: string;
+          payload?: Json;
+          processed_at?: string | null;
+          record_id?: string | null;
+          whatsapp_status?: string;
+        };
+        Relationships: [];
+      };
+      site_visits: {
+        Row: {
+          id: string;
+          path: string;
+          referrer_host: string | null;
+          session_id: string;
+          visited_at: string;
+          visitor_id: string;
+        };
+        Insert: {
+          id?: string;
+          path: string;
+          referrer_host?: string | null;
+          session_id: string;
+          visited_at?: string;
+          visitor_id: string;
+        };
+        Update: {
+          id?: string;
+          path?: string;
+          referrer_host?: string | null;
+          session_id?: string;
+          visited_at?: string;
+          visitor_id?: string;
+        };
+        Relationships: [];
+      };
       waitlist_entries: {
         Row: {
           city: string;

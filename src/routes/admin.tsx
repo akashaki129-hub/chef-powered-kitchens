@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { BarChart3, Download, Search } from "lucide-react";
+import { Activity, BarChart3, Bell, Download, Eye, Search, Users } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { BrandLogo } from "@/components/brand-logo";
@@ -56,6 +56,23 @@ type ResearchRow = {
   contact: string | null;
   comments: string | null;
   source: string;
+};
+
+type SiteVisitRow = {
+  id: string;
+  visitor_id: string;
+  session_id: string;
+  path: string;
+  visited_at: string;
+};
+
+type NotificationEventRow = {
+  id: string;
+  event_type: string;
+  email_status: string;
+  whatsapp_status: string;
+  processed_at: string | null;
+  created_at: string;
 };
 
 type AdminTab = "chefs" | "customers" | "waitlist" | "research";
@@ -114,6 +131,8 @@ function AdminPage() {
   const [customers, setCustomers] = useState<CustRow[]>([]);
   const [waitlist, setWaitlist] = useState<WaitlistRow[]>([]);
   const [research, setResearch] = useState<ResearchRow[]>([]);
+  const [visits, setVisits] = useState<SiteVisitRow[]>([]);
+  const [notificationEvents, setNotificationEvents] = useState<NotificationEventRow[]>([]);
   const [q, setQ] = useState("");
   const [audienceFilter, setAudienceFilter] = useState("all");
   const [cityFilter, setCityFilter] = useState("all");
@@ -138,7 +157,8 @@ function AdminPage() {
         return;
       }
 
-      const [c, cu, w, r] = await Promise.all([
+      const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+      const [c, cu, w, r, v, n] = await Promise.all([
         supabase.from("chef_enrollments").select("*").order("created_at", { ascending: false }),
         supabase.from("customer_enrollments").select("*").order("created_at", { ascending: false }),
         supabase.from("waitlist_entries").select("*").order("created_at", { ascending: false }),
@@ -146,6 +166,16 @@ function AdminPage() {
           .from("market_research_responses")
           .select("*")
           .order("created_at", { ascending: false }),
+        supabase
+          .from("site_visits")
+          .select("id,visitor_id,session_id,path,visited_at")
+          .gte("visited_at", thirtyDaysAgo)
+          .order("visited_at", { ascending: false }),
+        supabase
+          .from("notification_events")
+          .select("id,event_type,email_status,whatsapp_status,processed_at,created_at")
+          .order("created_at", { ascending: false })
+          .limit(100),
       ]);
       setStatus("ok");
       if (c.error) toast.error(c.error.message);
@@ -156,6 +186,10 @@ function AdminPage() {
       else setWaitlist(w.data as WaitlistRow[]);
       if (r.error) toast.error(r.error.message);
       else setResearch(r.data as ResearchRow[]);
+      if (v.error) toast.error(v.error.message);
+      else setVisits(v.data as SiteVisitRow[]);
+      if (n.error) toast.error(n.error.message);
+      else setNotificationEvents(n.data as NotificationEventRow[]);
     })();
   }, []);
 
@@ -203,6 +237,15 @@ function AdminPage() {
   }, [audienceFilter, cityFilter, q, research]);
 
   const cities = Array.from(new Set(research.map((row) => row.city))).sort();
+  const todayKey = indiaDateKey(new Date());
+  const todayVisits = visits.filter(
+    (visit) => indiaDateKey(new Date(visit.visited_at)) === todayKey,
+  );
+  const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+  const sevenDayVisits = visits.filter(
+    (visit) => new Date(visit.visited_at).getTime() >= sevenDaysAgo,
+  );
+  const queuedNotifications = notificationEvents.filter((event) => !event.processed_at).length;
 
   async function signOut() {
     await supabase.auth.signOut();
@@ -314,6 +357,42 @@ function AdminPage() {
           )}
         </div>
 
+        <section
+          className="mt-8 grid gap-3 sm:grid-cols-2 xl:grid-cols-5"
+          aria-label="Traffic overview"
+        >
+          <TrafficCard
+            icon={Users}
+            label="Visitors today"
+            value={new Set(todayVisits.map((visit) => visit.visitor_id)).size}
+            detail="Privacy-safe unique browsers"
+          />
+          <TrafficCard
+            icon={Activity}
+            label="Visits today"
+            value={new Set(todayVisits.map((visit) => visit.session_id)).size}
+            detail="Distinct browsing sessions"
+          />
+          <TrafficCard
+            icon={Eye}
+            label="Page views today"
+            value={todayVisits.length}
+            detail="Across public Soru pages"
+          />
+          <TrafficCard
+            icon={BarChart3}
+            label="7-day visitors"
+            value={new Set(sevenDayVisits.map((visit) => visit.visitor_id)).size}
+            detail={`${sevenDayVisits.length} page views`}
+          />
+          <TrafficCard
+            icon={Bell}
+            label="Alerts queued"
+            value={queuedNotifications}
+            detail={queuedNotifications ? "Awaiting delivery" : "Notification queue is clear"}
+          />
+        </section>
+
         <div className="mt-7 flex flex-wrap items-center gap-1 border-b border-border">
           <TabBtn active={tab === "chefs"} onClick={() => changeTab("chefs")}>
             Chefs ({chefs.length})
@@ -383,6 +462,31 @@ function AdminPage() {
         )}
       </main>
     </div>
+  );
+}
+
+function TrafficCard({
+  icon: Icon,
+  label,
+  value,
+  detail,
+}: {
+  icon: typeof Users;
+  label: string;
+  value: number;
+  detail: string;
+}) {
+  return (
+    <article className="rounded-2xl border border-border bg-card p-5 shadow-[var(--shadow-soft)]">
+      <div className="flex items-center justify-between gap-3">
+        <span className="text-xs font-semibold uppercase tracking-[.12em] text-muted-foreground">
+          {label}
+        </span>
+        <Icon className="size-4 text-primary" />
+      </div>
+      <div className="mt-4 font-display text-4xl font-medium">{value.toLocaleString("en-IN")}</div>
+      <p className="mt-1 text-xs text-muted-foreground">{detail}</p>
+    </article>
   );
 }
 
@@ -733,6 +837,15 @@ function formatLabel(value: string) {
     ?.split("_")
     .map((part) => part[0].toUpperCase() + part.slice(1))
     .join(" ");
+}
+
+function indiaDateKey(value: Date) {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Kolkata",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(value);
 }
 
 function TabBtn({
