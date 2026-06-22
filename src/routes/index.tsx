@@ -8,6 +8,8 @@ import {
   Clock3,
   GraduationCap,
   HeartHandshake,
+  Instagram,
+  Linkedin,
   MapPin,
   ShieldCheck,
   Sparkles,
@@ -739,28 +741,60 @@ function Footer() {
             </div>
           </div>
         </div>
-        <nav className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
-          <a href="#services" className="hover:text-foreground">
-            Services
-          </a>
-          <a href="/join-as-chef" className="hover:text-foreground">
-            For chefs
-          </a>
-          <a href="/enroll" className="hover:text-foreground">
-            For customers
-          </a>
-          <a href="#" className="hover:text-foreground">
-            Privacy
-          </a>
-          <a href="#" className="hover:text-foreground">
-            Terms
-          </a>
-        </nav>
+        <div className="flex flex-wrap items-center gap-5">
+          <nav className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
+            <a href="#services" className="hover:text-foreground">
+              Services
+            </a>
+            <a href="/join-as-chef" className="hover:text-foreground">
+              For chefs
+            </a>
+            <a href="/enroll" className="hover:text-foreground">
+              For customers
+            </a>
+            <a href="#" className="hover:text-foreground">
+              Privacy
+            </a>
+            <a href="#" className="hover:text-foreground">
+              Terms
+            </a>
+          </nav>
+          <div className="flex items-center gap-2" aria-label="Follow Soru">
+            <SocialLink href="https://www.instagram.com/soru.india/" label="Soru on Instagram">
+              <Instagram className="size-4" />
+            </SocialLink>
+            <SocialLink href="https://www.linkedin.com/company/soru-india" label="Soru on LinkedIn">
+              <Linkedin className="size-4" />
+            </SocialLink>
+          </div>
+        </div>
         <div className="text-xs text-muted-foreground">
           © {new Date().getFullYear()} Soru · Made in India
         </div>
       </div>
     </footer>
+  );
+}
+
+function SocialLink({
+  href,
+  label,
+  children,
+}: {
+  href: string;
+  label: string;
+  children: ReactNode;
+}) {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noreferrer"
+      aria-label={label}
+      className="inline-flex size-9 items-center justify-center rounded-full border border-border bg-card text-muted-foreground transition hover:-translate-y-0.5 hover:border-[color:var(--saffron)] hover:text-foreground"
+    >
+      {children}
+    </a>
   );
 }
 
