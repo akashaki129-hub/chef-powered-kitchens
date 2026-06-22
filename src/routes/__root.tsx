@@ -78,16 +78,36 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Soru — Choose Your Chef. Define Your Goals. Enjoy Healthy Food." },
-      { name: "description", content: "India's chef-powered platform connecting talented cooks with people seeking healthy, trustworthy, and personalized meals." },
-      { property: "og:title", content: "Soru — Choose Your Chef. Define Your Goals. Enjoy Healthy Food." },
-      { property: "og:description", content: "India's chef-powered platform connecting talented cooks with people seeking healthy, trustworthy, and personalized meals." },
+      { title: "Soru — Every chef’s special, closer to home." },
+      {
+        name: "description",
+        content:
+          "India's chef-powered platform connecting talented cooks with people seeking healthy, trustworthy, and personalized meals.",
+      },
+      { property: "og:title", content: "Soru — Every chef’s special, closer to home." },
+      {
+        property: "og:description",
+        content:
+          "India's chef-powered platform connecting talented cooks with people seeking healthy, trustworthy, and personalized meals.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "Soru — Choose Your Chef. Define Your Goals. Enjoy Healthy Food." },
-      { name: "twitter:description", content: "India's chef-powered platform connecting talented cooks with people seeking healthy, trustworthy, and personalized meals." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/75154ba5-3786-40f0-b5b1-fcd2fbc636da/id-preview-0fd83b53--d04faae7-e8d2-4360-be41-206ffa76e1be.lovable.app-1781610836987.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/75154ba5-3786-40f0-b5b1-fcd2fbc636da/id-preview-0fd83b53--d04faae7-e8d2-4360-be41-206ffa76e1be.lovable.app-1781610836987.png" },
+      { name: "twitter:title", content: "Soru — Every chef’s special, closer to home." },
+      {
+        name: "twitter:description",
+        content:
+          "India's chef-powered platform connecting talented cooks with people seeking healthy, trustworthy, and personalized meals.",
+      },
+      {
+        property: "og:image",
+        content:
+          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/75154ba5-3786-40f0-b5b1-fcd2fbc636da/id-preview-0fd83b53--d04faae7-e8d2-4360-be41-206ffa76e1be.lovable.app-1781610836987.png",
+      },
+      {
+        name: "twitter:image",
+        content:
+          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/75154ba5-3786-40f0-b5b1-fcd2fbc636da/id-preview-0fd83b53--d04faae7-e8d2-4360-be41-206ffa76e1be.lovable.app-1781610836987.png",
+      },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
