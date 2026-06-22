@@ -27,11 +27,11 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Soru — Your chef. Your goals. Food that fits." },
+      { title: "Soru — Every chef’s special, closer to home." },
       {
         name: "description",
         content:
-          "Verified chefs, personalized meals, flexible subscriptions, on-demand orders and student lunchboxes — thoughtfully made for everyday life.",
+          "Soru is a chef-powered food services marketplace for affordable meals from verified chefs and income opportunities for skilled cooks.",
       },
     ],
   }),
@@ -119,6 +119,8 @@ function Landing() {
       <Nav />
       <main>
         <Hero />
+        <MissionVision />
+        <WhatSoruIs />
         <Services />
         <WhySoru />
         <Process />
@@ -133,18 +135,15 @@ function Nav() {
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-border bg-white/95 text-foreground backdrop-blur-xl">
       <div className="container-x flex h-16 items-center justify-between">
-        <a href="#top" aria-label="Sōru home">
+        <a href="#top" aria-label="Soru home">
           <BrandLogo />
         </a>
         <nav className="hidden items-center gap-7 text-sm text-muted-foreground md:flex">
-          <a href="#services" className="transition hover:text-foreground">
-            Services
+          <a href="#mission" className="transition hover:text-foreground">
+            Mission
           </a>
-          <a href="#why" className="transition hover:text-foreground">
-            Why Soru
-          </a>
-          <a href="#how" className="transition hover:text-foreground">
-            How it works
+          <a href="#vision" className="transition hover:text-foreground">
+            Vision
           </a>
           <a href="/join-as-chef" className="transition hover:text-foreground">
             For chefs
@@ -171,12 +170,13 @@ function Hero() {
             <MapPin className="size-3.5" /> Bengaluru · Chennai · Hyderabad
           </Pill>
           <h1 className="mt-7 max-w-4xl text-balance font-display text-[clamp(3.1rem,7vw,6.6rem)] font-medium leading-[.9] tracking-[-0.055em]">
-            Food that fits
-            <span className="block italic text-[color:var(--saffron)]">your life.</span>
+            Every chef’s special,
+            <span className="block italic text-[color:var(--saffron)]">closer to home.</span>
           </h1>
-          <p className="mt-7 max-w-xl text-balance text-base leading-7 text-white/68 md:text-lg">
-            Personalized nutrition plans and flexible ordering from verified chefs — plus hands-on
-            food license guidance for independent chefs and home cooks.
+          <p className="mt-7 max-w-2xl text-balance text-base leading-7 text-white/68 md:text-lg">
+            Soru is a chef-powered food services marketplace where customers discover affordable,
+            trusted meals from verified chefs — and skilled cooks turn their cooking ability into
+            income.
           </p>
           <div className="mt-9 flex flex-wrap gap-3">
             <CTA href="/enroll">Join as a customer</CTA>
@@ -233,6 +233,144 @@ function Hero() {
               </div>
             </div>
           </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function MissionVision() {
+  return (
+    <section id="mission" className="grain-bg scroll-mt-24 py-20 md:py-28">
+      <div className="container-x">
+        <div className="mx-auto max-w-4xl text-center">
+          <Pill>Our purpose</Pill>
+          <h2 className="mt-5 text-balance font-display text-4xl font-medium leading-[.98] tracking-[-.045em] md:text-6xl">
+            Our Mission <span className="italic text-primary">&amp; Vision</span>
+          </h2>
+          <p className="mx-auto mt-6 max-w-3xl text-base leading-7 text-muted-foreground md:text-lg">
+            Soru is not just a food delivery platform. It is a marketplace for food talent,
+            affordable everyday meals, and chef-led food services.
+          </p>
+        </div>
+
+        <div className="mt-12 grid gap-5 lg:grid-cols-2">
+          <article className="relative overflow-hidden rounded-[2rem] bg-[color:var(--ink)] p-7 text-white shadow-[var(--shadow-soft)] md:p-10">
+            <div className="pointer-events-none absolute -right-16 -top-16 size-56 rounded-full bg-[color:var(--saffron)]/15 blur-2xl" />
+            <div className="relative">
+              <span className="inline-flex rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-[.68rem] font-semibold uppercase tracking-[.18em] text-[color:var(--saffron)]">
+                01 · Mission
+              </span>
+              <h3 className="mt-7 font-display text-4xl font-medium md:text-5xl">Mission</h3>
+              <div className="mt-6 space-y-4 text-sm leading-7 text-white/65 md:text-base">
+                <p>
+                  Soru’s mission is to make good food more affordable and accessible while creating
+                  income opportunities for anyone with verified cooking skill.
+                </p>
+                <p>
+                  We are building a platform where home chefs, homemakers, culinary students,
+                  professional cooks, caterers, and emerging food entrepreneurs can turn their
+                  cooking ability into a real business. At the same time, customers get access to
+                  affordable, trustworthy, home-style meals without the heavy cost usually
+                  associated with restaurants and hotels.
+                </p>
+                <p className="font-medium text-white">
+                  Soru is not only a food platform. It is an income-generation platform for skilled
+                  cooks and a better everyday food solution for customers.
+                </p>
+              </div>
+            </div>
+          </article>
+
+          <article
+            id="vision"
+            className="relative scroll-mt-24 overflow-hidden rounded-[2rem] border border-border bg-card p-7 shadow-[var(--shadow-soft)] md:p-10"
+          >
+            <div className="pointer-events-none absolute -bottom-20 -right-12 size-64 rounded-full bg-primary/15 blur-3xl" />
+            <div className="relative">
+              <span className="inline-flex rounded-full border border-border bg-secondary px-3 py-1.5 text-[.68rem] font-semibold uppercase tracking-[.18em] text-muted-foreground">
+                02 · Vision
+              </span>
+              <h3 className="mt-7 font-display text-4xl font-medium md:text-5xl">Vision</h3>
+              <div className="mt-6 space-y-4 text-sm leading-7 text-muted-foreground md:text-base">
+                <p>
+                  Our vision is to become India’s most trusted food services marketplace — a
+                  platform where the best cooking talent, from home kitchens to nationally
+                  recognised chefs, can be discovered, trusted, and chosen by customers.
+                </p>
+                <p>
+                  Soru aims to create access for food talent the way major marketplaces created
+                  access for products and sellers. Anyone with the right cooking skill, quality
+                  standards, and consistency should be able to build a livelihood and grow through
+                  Soru.
+                </p>
+                <p className="font-medium text-foreground">
+                  In the future, Soru will become the destination where customers find affordable
+                  daily meals, personalised food plans, student lunchboxes, family subscriptions,
+                  corporate meals, chef specials, make-your-own-menu options, and chef-led food
+                  experiences.
+                </p>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function WhatSoruIs() {
+  const audiences = [
+    {
+      icon: Users,
+      title: "For customers",
+      copy: "Affordable, trusted meals from verified chefs — built around taste, health goals, routine, family needs, and budget.",
+    },
+    {
+      icon: Store,
+      title: "For chefs",
+      copy: "A platform to earn, build a food identity, publish menus, receive orders, grow subscriptions, and get discovered.",
+    },
+    {
+      icon: GraduationCap,
+      title: "For families & students",
+      copy: "Fresh lunchboxes, monthly meal plans, allergy-aware options, and dependable food without restaurant-style costs.",
+    },
+    {
+      icon: Sparkles,
+      title: "For the future of food",
+      copy: "A chef-led marketplace where people explore chef specials, regional dishes, make-your-own menus, and recognised chefs from across India.",
+    },
+  ];
+
+  return (
+    <section className="border-y border-border bg-secondary/55 py-16 md:py-20">
+      <div className="container-x">
+        <div className="flex flex-col justify-between gap-5 md:flex-row md:items-end">
+          <div>
+            <Pill>The marketplace</Pill>
+            <h2 className="mt-5 text-balance font-display text-4xl font-medium leading-none md:text-5xl">
+              What Soru <span className="italic text-primary">really is</span>
+            </h2>
+          </div>
+          <p className="max-w-md text-sm leading-6 text-muted-foreground">
+            One trusted platform serving the people who eat, the people who cook, and the food
+            culture they create together.
+          </p>
+        </div>
+        <div className="mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          {audiences.map(({ icon: Icon, title, copy }) => (
+            <article
+              key={title}
+              className="rounded-3xl border border-border bg-card p-6 shadow-[var(--shadow-soft)] md:p-7"
+            >
+              <span className="grid size-11 place-items-center rounded-2xl bg-primary text-primary-foreground">
+                <Icon className="size-5" />
+              </span>
+              <h3 className="mt-6 font-display text-2xl font-medium">{title}</h3>
+              <p className="mt-3 text-sm leading-6 text-muted-foreground">{copy}</p>
+            </article>
+          ))}
         </div>
       </div>
     </section>
@@ -339,6 +477,11 @@ function WhySoru() {
       title: "Chefs grow too",
       copy: "Food license and FSSAI guidance for independent chefs and home cooks.",
     },
+    {
+      icon: Store,
+      title: "Income for skilled cooks",
+      copy: "Soru helps verified cooks, homemakers, culinary students, and chefs turn their cooking skill into a real earning opportunity.",
+    },
   ];
   return (
     <section
@@ -360,7 +503,7 @@ function WhySoru() {
             Thoughtful choices for customers. Sustainable opportunity for the people who cook.
           </p>
         </div>
-        <div className="mt-12 grid gap-px overflow-hidden rounded-3xl border border-white/10 bg-white/10 md:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-12 grid gap-px overflow-hidden rounded-3xl border border-white/10 bg-white/10 md:grid-cols-2 lg:grid-cols-5">
           {points.map(({ icon: Icon, title, copy }) => (
             <div key={title} className="bg-[color:var(--ink)] p-7 md:p-8">
               <Icon className="size-6 text-[color:var(--saffron)]" />
@@ -453,7 +596,7 @@ function Enrollment() {
       return;
     }
     setSubmitted(true);
-    toast.success("You're on the Sōru waitlist!");
+    toast.success("You're on the Soru waitlist!");
   };
 
   return (
@@ -541,7 +684,7 @@ function Enrollment() {
                   </div>
                   <div className="sm:col-span-2">
                     <TextArea
-                      label="What would you like Sōru to know? (optional)"
+                      label="What would you like Soru to know? (optional)"
                       name="comments"
                       placeholder="Customers: tell us what you need. Chefs: share your goals, ideas, or support you’re looking for."
                     />
@@ -571,7 +714,7 @@ function Footer() {
           <BrandLogo />
           <div>
             <div className="text-xs text-muted-foreground">
-              Chef-powered food, thoughtfully made.
+              Every chef’s special, closer to home.
             </div>
           </div>
         </div>

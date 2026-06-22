@@ -69,7 +69,7 @@ function EnrollPage() {
     <div className="min-h-screen bg-background">
       <header className="border-b border-border/60">
         <div className="container-x flex h-16 items-center justify-between">
-          <Link to="/" aria-label="Sōru home">
+          <Link to="/" aria-label="Soru home">
             <BrandLogo />
           </Link>
           <Link to="/join-as-chef" className="text-sm text-muted-foreground hover:text-foreground">
@@ -150,7 +150,7 @@ function EnrollPage() {
                   ))}
                 </select>
               </Field>
-              <Field label="What do you need from Sōru? (optional)">
+              <Field label="What do you need from Soru? (optional)">
                 <textarea
                   value={form.comments}
                   onChange={(e) => setForm({ ...form, comments: e.target.value })}

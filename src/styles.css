@@ -46,7 +46,7 @@
 :root {
   --radius: 1rem;
 
-  /* Sōru brand palette: luminous amber, clean white and confident black. */
+  /* Soru brand palette: luminous amber, clean white and confident black. */
   --background: oklch(0.99 0.004 85);
   --foreground: oklch(0.15 0.008 75);
   --card: oklch(1 0 0);

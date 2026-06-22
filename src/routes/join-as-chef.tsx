@@ -71,7 +71,7 @@ function ChefEnrollPage() {
     <div className="min-h-screen bg-background">
       <header className="border-b border-border/60">
         <div className="container-x flex h-16 items-center justify-between">
-          <Link to="/" aria-label="Sōru home">
+          <Link to="/" aria-label="Soru home">
             <BrandLogo />
           </Link>
           <Link to="/enroll" className="text-sm text-muted-foreground hover:text-foreground">
@@ -152,7 +152,7 @@ function ChefEnrollPage() {
                   ))}
                 </select>
               </Field>
-              <Field label="What would you like to share with Sōru? (optional)">
+              <Field label="What would you like to share with Soru? (optional)">
                 <textarea
                   value={form.comments}
                   onChange={(e) => setForm({ ...form, comments: e.target.value })}
