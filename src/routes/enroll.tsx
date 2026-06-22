@@ -3,6 +3,7 @@ import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { z } from "zod";
+import { BrandLogo } from "@/components/brand-logo";
 
 export const Route = createFileRoute("/enroll")({
   head: () => ({
@@ -19,6 +20,7 @@ const schema = z.object({
   phone: z.string().trim().min(7, "Valid phone required").max(20),
   email: z.string().trim().email("Valid email required").max(255),
   preferred_service: z.string().min(1, "Please select a service"),
+  comments: z.string().trim().max(1500, "Please keep your note under 1,500 characters").optional(),
 });
 
 const services = [
@@ -31,7 +33,13 @@ const services = [
 ];
 
 function EnrollPage() {
-  const [form, setForm] = useState({ name: "", phone: "", email: "", preferred_service: "" });
+  const [form, setForm] = useState({
+    name: "",
+    phone: "",
+    email: "",
+    preferred_service: "",
+    comments: "",
+  });
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
 
@@ -43,7 +51,10 @@ function EnrollPage() {
       return;
     }
     setLoading(true);
-    const { error } = await supabase.from("customer_enrollments").insert(parsed.data);
+    const { error } = await supabase.from("customer_enrollments").insert({
+      ...parsed.data,
+      comments: parsed.data.comments || null,
+    });
     setLoading(false);
     if (error) {
       toast.error("Could not submit. Please try again.");
@@ -51,14 +62,16 @@ function EnrollPage() {
     }
     setDone(true);
     toast.success("You're in! We'll be in touch soon.");
-    setForm({ name: "", phone: "", email: "", preferred_service: "" });
+    setForm({ name: "", phone: "", email: "", preferred_service: "", comments: "" });
   }
 
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border/60">
         <div className="container-x flex h-16 items-center justify-between">
-          <Link to="/" className="font-display text-xl font-semibold">Soru</Link>
+          <Link to="/" aria-label="Sōru home">
+            <BrandLogo />
+          </Link>
           <Link to="/join-as-chef" className="text-sm text-muted-foreground hover:text-foreground">
             Are you a chef? →
           </Link>
@@ -89,7 +102,10 @@ function EnrollPage() {
               </button>
             </div>
           ) : (
-            <form onSubmit={onSubmit} className="mt-10 space-y-5 rounded-2xl border border-border bg-card p-6 md:p-8">
+            <form
+              onSubmit={onSubmit}
+              className="mt-10 space-y-5 rounded-2xl border border-border bg-card p-6 md:p-8"
+            >
               <Field label="Full name">
                 <input
                   required
@@ -127,8 +143,21 @@ function EnrollPage() {
                   className="input"
                 >
                   <option value="">Select a service…</option>
-                  {services.map((s) => <option key={s} value={s}>{s}</option>)}
+                  {services.map((s) => (
+                    <option key={s} value={s}>
+                      {s}
+                    </option>
+                  ))}
                 </select>
+              </Field>
+              <Field label="What do you need from Sōru? (optional)">
+                <textarea
+                  value={form.comments}
+                  onChange={(e) => setForm({ ...form, comments: e.target.value })}
+                  className="input min-h-28 resize-y"
+                  maxLength={1500}
+                  placeholder="Share your food goals, dietary needs, delivery preferences, or anything you'd like us to build."
+                />
               </Field>
               <button
                 type="submit"
@@ -146,15 +175,15 @@ function EnrollPage() {
         .input {
           width: 100%;
           border-radius: 0.75rem;
-          border: 1px solid hsl(var(--border));
-          background: hsl(var(--background));
+          border: 1px solid var(--border);
+          background: var(--background);
           padding: 0.7rem 0.9rem;
           font-size: 0.95rem;
-          color: hsl(var(--foreground));
+          color: var(--foreground);
           outline: none;
           transition: border-color .15s ease, box-shadow .15s ease;
         }
-        .input:focus { border-color: hsl(var(--primary)); box-shadow: 0 0 0 3px hsl(var(--primary) / 0.15); }
+        .input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px color-mix(in oklab, var(--primary) 18%, transparent); }
       `}</style>
     </div>
   );
