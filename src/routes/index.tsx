@@ -121,9 +121,9 @@ function Landing() {
         <Hero />
         <MissionVision />
         <WhatSoruIs />
+        <FoodThatFits />
         <Services />
         <WhySoru />
-        <Process />
         <Enrollment />
       </main>
       <Footer />
@@ -377,6 +377,70 @@ function WhatSoruIs() {
   );
 }
 
+function FoodThatFits() {
+  const needs = [
+    "Everyday eating",
+    "Fitness goals",
+    "Vegan lifestyles",
+    "Office lunches",
+    "Student meals",
+    "Family meals",
+    "Personalized nutrition plans",
+  ];
+
+  return (
+    <section
+      id="food-that-fits"
+      className="relative overflow-hidden bg-[color:var(--ink)] py-20 text-white md:py-28"
+    >
+      <div className="hero-mesh pointer-events-none absolute inset-0 opacity-45" />
+      <div className="container-x relative">
+        <div className="grid gap-12 lg:grid-cols-[.9fr_1.1fr] lg:gap-20">
+          <div>
+            <Pill dark>Made for real life</Pill>
+            <h2 className="mt-6 max-w-2xl text-balance font-display text-5xl font-medium leading-[.95] tracking-[-.045em] md:text-6xl">
+              Food that fits your life.{" "}
+              <span className="italic text-[color:var(--saffron)]">Not just your cravings.</span>
+            </h2>
+          </div>
+
+          <div className="lg:border-l lg:border-white/12 lg:pl-16">
+            <p className="max-w-xl font-display text-2xl leading-snug text-white md:text-3xl">
+              Restaurant menus are built for everyone.{" "}
+              <span className="text-white/58">
+                Your body, goals, and food choices are personal.
+              </span>
+            </p>
+            <div className="mt-8 max-w-2xl space-y-5 text-base leading-7 text-white/65 md:text-lg md:leading-8">
+              <p>
+                Soru helps you discover chef-made meals for everyday eating, fitness goals, vegan
+                lifestyles, office lunches, student meals, family meals, and personalized nutrition
+                plans.
+              </p>
+              <p>
+                Whether you want high-protein meals, clean vegetarian food, vegan bowls,
+                calorie-conscious lunches, or comforting regional specials — Soru brings every
+                chef’s special closer to home.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-14 flex flex-wrap gap-2 border-t border-white/12 pt-8">
+          {needs.map((need) => (
+            <span
+              key={need}
+              className="rounded-full border border-white/12 bg-white/[.06] px-4 py-2 text-xs font-semibold text-white/72 backdrop-blur"
+            >
+              {need}
+            </span>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function Services() {
   return (
     <section id="services" className="py-20 md:py-28">
@@ -509,61 +573,6 @@ function WhySoru() {
               <Icon className="size-6 text-[color:var(--saffron)]" />
               <h3 className="mt-8 font-display text-2xl">{title}</h3>
               <p className="mt-3 text-sm leading-6 text-white/55">{copy}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function Process() {
-  const steps = [
-    {
-      number: "01",
-      icon: Users,
-      title: "Choose",
-      copy: "Discover verified chefs, select a service or start your chef profile.",
-    },
-    {
-      number: "02",
-      icon: Sparkles,
-      title: "Customize",
-      copy: "Set food goals, meal preferences, schedules or the offer you want to launch.",
-    },
-    {
-      number: "03",
-      icon: Bike,
-      title: "Deliver & grow",
-      copy: "Enjoy reliable meals — or operate your food business with Soru beside you.",
-    },
-  ];
-  return (
-    <section id="how" className="py-20 md:py-28">
-      <div className="container-x">
-        <div className="mx-auto max-w-3xl text-center">
-          <Pill>How it works</Pill>
-          <h2 className="mt-5 text-balance font-display text-4xl font-medium leading-none md:text-6xl">
-            Three steps. <span className="italic text-primary">No fuss.</span>
-          </h2>
-        </div>
-        <div className="relative mt-14 grid gap-5 md:grid-cols-3">
-          <div className="pointer-events-none absolute left-[16%] right-[16%] top-10 hidden border-t border-dashed border-border md:block" />
-          {steps.map(({ number, icon: Icon, title, copy }) => (
-            <div
-              key={number}
-              className="relative rounded-3xl border border-border bg-card p-7 text-center shadow-[var(--shadow-soft)] md:p-9"
-            >
-              <span className="relative mx-auto grid size-20 place-items-center rounded-full border border-border bg-background shadow-sm">
-                <Icon className="size-7 text-primary" />
-              </span>
-              <div className="mt-7 text-xs font-semibold tracking-[.2em] text-primary">
-                {number}
-              </div>
-              <h3 className="mt-2 font-display text-3xl">{title}</h3>
-              <p className="mx-auto mt-3 max-w-xs text-sm leading-6 text-muted-foreground">
-                {copy}
-              </p>
             </div>
           ))}
         </div>
