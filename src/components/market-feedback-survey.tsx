@@ -117,6 +117,7 @@ export function MarketFeedbackSurvey() {
   const [chefTimeline, setChefTimeline] = useState("");
   const [chefSupport, setChefSupport] = useState<string[]>([]);
   const [city, setCity] = useState("Bengaluru");
+  const [fullName, setFullName] = useState("");
   const [contact, setContact] = useState("");
   const [comments, setComments] = useState("");
   const [submissionId, setSubmissionId] = useState("");
@@ -223,8 +224,13 @@ export function MarketFeedbackSurvey() {
       setError("Choose your city.");
       return;
     }
-    if (contact.trim() && contact.trim().length < 3) {
-      setError("Enter a complete mobile number or email, or leave it blank.");
+    if (fullName.trim().length < 2) {
+      setError("Enter your full name so we can identify your response.");
+      return;
+    }
+    const phoneDigits = contact.replace(/\D/g, "");
+    if (phoneDigits.length < 10 || phoneDigits.length > 15) {
+      setError("Enter a valid mobile number with 10 to 15 digits.");
       return;
     }
 
@@ -239,7 +245,8 @@ export function MarketFeedbackSurvey() {
       chef_start_timeline: chefAudience ? chefTimeline : null,
       chef_support_needs: chefAudience ? chefSupport : [],
       city,
-      contact: contact.trim() || null,
+      full_name: fullName.trim(),
+      contact: contact.trim(),
       comments: comments.trim() || null,
       source: "homepage_feedback_popup",
     });
@@ -452,6 +459,31 @@ export function MarketFeedbackSurvey() {
 
                       <div className="grid gap-4 sm:grid-cols-2">
                         <label className="text-sm font-semibold">
+                          Full name
+                          <input
+                            value={fullName}
+                            onChange={(event) => setFullName(event.target.value)}
+                            maxLength={100}
+                            autoComplete="name"
+                            required
+                            placeholder="Your name"
+                            className="mt-2 w-full rounded-xl border border-border bg-white px-4 py-3 text-sm font-normal outline-none placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/15"
+                          />
+                        </label>
+                        <label className="text-sm font-semibold">
+                          Mobile number
+                          <input
+                            value={contact}
+                            onChange={(event) => setContact(event.target.value)}
+                            maxLength={25}
+                            inputMode="tel"
+                            autoComplete="tel"
+                            required
+                            placeholder="+91 98765 43210"
+                            className="mt-2 w-full rounded-xl border border-border bg-white px-4 py-3 text-sm font-normal outline-none placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/15"
+                          />
+                        </label>
+                        <label className="text-sm font-semibold sm:col-span-2">
                           City
                           <select
                             value={city}
@@ -462,17 +494,6 @@ export function MarketFeedbackSurvey() {
                               <option key={item}>{item}</option>
                             ))}
                           </select>
-                        </label>
-                        <label className="text-sm font-semibold">
-                          Mobile or email{" "}
-                          <span className="font-normal text-muted-foreground">(optional)</span>
-                          <input
-                            value={contact}
-                            onChange={(event) => setContact(event.target.value)}
-                            maxLength={255}
-                            placeholder="For early-access updates"
-                            className="mt-2 w-full rounded-xl border border-border bg-white px-4 py-3 text-sm font-normal outline-none placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/15"
-                          />
                         </label>
                       </div>
                       <label className="block text-sm font-semibold">
@@ -488,8 +509,9 @@ export function MarketFeedbackSurvey() {
                         />
                       </label>
                       <p className="text-xs leading-5 text-muted-foreground">
-                        Your feedback is kept private and used in aggregate for product research. If
-                        you share contact details, Soru may reach out about early access.
+                        Your response stays private and is used in aggregate for product research.
+                        By submitting, you agree that Soru may contact you for early access and
+                        research follow-up.
                       </p>
                     </div>
                   </SurveyStep>

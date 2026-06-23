@@ -53,6 +53,7 @@ type ResearchRow = {
   chef_start_timeline: string | null;
   chef_support_needs: string[];
   city: string;
+  full_name: string | null;
   contact: string | null;
   comments: string | null;
   source: string;
@@ -223,6 +224,7 @@ function AdminPage() {
         [
           AUDIENCE_LABELS[row.audience],
           row.city,
+          row.full_name,
           row.contact,
           row.comments,
           ...row.statements.map((item) => STATEMENT_LABELS[item]),
@@ -268,6 +270,7 @@ function AdminPage() {
         "chef_start_timeline",
         "chef_support_needs",
         "city",
+        "full_name",
         "contact",
         "comments",
       ];
@@ -568,13 +571,14 @@ function ResearchDashboard({ rows }: { rows: ResearchRow[] }) {
                 <th className="px-4 py-3">Signals</th>
                 <th className="px-4 py-3">Validation</th>
                 <th className="px-4 py-3">City</th>
-                <th className="px-4 py-3">Contact & comment</th>
+                <th className="px-4 py-3">Name & contact</th>
+                <th className="px-4 py-3">Comment</th>
               </tr>
             </thead>
             <tbody>
               {rows.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-4 py-12 text-center text-muted-foreground">
+                  <td colSpan={7} className="px-4 py-12 text-center text-muted-foreground">
                     No research responses match these filters yet.
                   </td>
                 </tr>
@@ -615,12 +619,18 @@ function ResearchDashboard({ rows }: { rows: ResearchRow[] }) {
                     </td>
                     <td className="px-4 py-4">{row.city}</td>
                     <td className="max-w-sm px-4 py-4">
-                      <div className="font-medium">{row.contact || "No contact shared"}</div>
+                      <div className="font-medium">{row.full_name || "Legacy response"}</div>
+                      <div className="mt-1 text-xs text-muted-foreground">
+                        {row.contact || "No contact shared"}
+                      </div>
+                    </td>
+                    <td className="max-w-sm px-4 py-4">
                       {row.comments && (
-                        <div className="mt-1 whitespace-pre-wrap text-xs leading-5 text-muted-foreground">
+                        <div className="whitespace-pre-wrap text-xs leading-5 text-muted-foreground">
                           {row.comments}
                         </div>
                       )}
+                      {!row.comments && <span className="text-muted-foreground">—</span>}
                     </td>
                   </tr>
                 ))

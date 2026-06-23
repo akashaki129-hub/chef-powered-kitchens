@@ -78,6 +78,7 @@ function formatEvent(event: NotificationEvent) {
 
   const preferredOrder = [
     "name",
+    "full_name",
     "audience",
     "role",
     "preferred_service",

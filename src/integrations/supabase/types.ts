@@ -80,6 +80,7 @@ export type Database = {
           created_at: string;
           customer_monthly_budget: string | null;
           customer_order_frequency: string | null;
+          full_name: string | null;
           id: string;
           source: string;
           statements: string[];
@@ -91,10 +92,11 @@ export type Database = {
           city: string;
           client_submission_id: string;
           comments?: string | null;
-          contact?: string | null;
+          contact: string;
           created_at?: string;
           customer_monthly_budget?: string | null;
           customer_order_frequency?: string | null;
+          full_name: string;
           id?: string;
           source?: string;
           statements: string[];
@@ -110,6 +112,7 @@ export type Database = {
           created_at?: string;
           customer_monthly_budget?: string | null;
           customer_order_frequency?: string | null;
+          full_name?: string | null;
           id?: string;
           source?: string;
           statements?: string[];
