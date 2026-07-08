@@ -9,12 +9,20 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SoruAuthRouteImport } from './routes/soru-auth'
 import { Route as JoinAsChefRouteImport } from './routes/join-as-chef'
 import { Route as EnrollRouteImport } from './routes/enroll'
+import { Route as ChefStudioRouteImport } from './routes/chef-studio'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AppRouteImport } from './routes/app'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 
+const SoruAuthRoute = SoruAuthRouteImport.update({
+  id: '/soru-auth',
+  path: '/soru-auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const JoinAsChefRoute = JoinAsChefRouteImport.update({
   id: '/join-as-chef',
   path: '/join-as-chef',
@@ -25,9 +33,19 @@ const EnrollRoute = EnrollRouteImport.update({
   path: '/enroll',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ChefStudioRoute = ChefStudioRouteImport.update({
+  id: '/chef-studio',
+  path: '/chef-studio',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppRoute = AppRouteImport.update({
+  id: '/app',
+  path: '/app',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminRoute = AdminRouteImport.update({
@@ -44,43 +62,87 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/app': typeof AppRoute
   '/auth': typeof AuthRoute
+  '/chef-studio': typeof ChefStudioRoute
   '/enroll': typeof EnrollRoute
   '/join-as-chef': typeof JoinAsChefRoute
+  '/soru-auth': typeof SoruAuthRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/app': typeof AppRoute
   '/auth': typeof AuthRoute
+  '/chef-studio': typeof ChefStudioRoute
   '/enroll': typeof EnrollRoute
   '/join-as-chef': typeof JoinAsChefRoute
+  '/soru-auth': typeof SoruAuthRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/app': typeof AppRoute
   '/auth': typeof AuthRoute
+  '/chef-studio': typeof ChefStudioRoute
   '/enroll': typeof EnrollRoute
   '/join-as-chef': typeof JoinAsChefRoute
+  '/soru-auth': typeof SoruAuthRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/admin' | '/auth' | '/enroll' | '/join-as-chef'
+  fullPaths:
+    | '/'
+    | '/admin'
+    | '/app'
+    | '/auth'
+    | '/chef-studio'
+    | '/enroll'
+    | '/join-as-chef'
+    | '/soru-auth'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/admin' | '/auth' | '/enroll' | '/join-as-chef'
-  id: '__root__' | '/' | '/admin' | '/auth' | '/enroll' | '/join-as-chef'
+  to:
+    | '/'
+    | '/admin'
+    | '/app'
+    | '/auth'
+    | '/chef-studio'
+    | '/enroll'
+    | '/join-as-chef'
+    | '/soru-auth'
+  id:
+    | '__root__'
+    | '/'
+    | '/admin'
+    | '/app'
+    | '/auth'
+    | '/chef-studio'
+    | '/enroll'
+    | '/join-as-chef'
+    | '/soru-auth'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRoute
+  AppRoute: typeof AppRoute
   AuthRoute: typeof AuthRoute
+  ChefStudioRoute: typeof ChefStudioRoute
   EnrollRoute: typeof EnrollRoute
   JoinAsChefRoute: typeof JoinAsChefRoute
+  SoruAuthRoute: typeof SoruAuthRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/soru-auth': {
+      id: '/soru-auth'
+      path: '/soru-auth'
+      fullPath: '/soru-auth'
+      preLoaderRoute: typeof SoruAuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/join-as-chef': {
       id: '/join-as-chef'
       path: '/join-as-chef'
@@ -95,11 +157,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EnrollRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/chef-studio': {
+      id: '/chef-studio'
+      path: '/chef-studio'
+      fullPath: '/chef-studio'
+      preLoaderRoute: typeof ChefStudioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app': {
+      id: '/app'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof AppRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin': {
@@ -122,9 +198,12 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
+  AppRoute: AppRoute,
   AuthRoute: AuthRoute,
+  ChefStudioRoute: ChefStudioRoute,
   EnrollRoute: EnrollRoute,
   JoinAsChefRoute: JoinAsChefRoute,
+  SoruAuthRoute: SoruAuthRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

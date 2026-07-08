@@ -149,12 +149,15 @@ function Nav() {
           <a href="#vision" className="transition hover:text-foreground">
             Vision
           </a>
-          <a href="/join-as-chef" className="transition hover:text-foreground">
+          <a href="/chef-studio" className="transition hover:text-foreground">
             For chefs
+          </a>
+          <a href="/app" className="transition hover:text-foreground">
+            Soru app
           </a>
         </nav>
         <a
-          href="/enroll"
+          href="/soru-auth"
           className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition hover:-translate-y-0.5 hover:brightness-105"
         >
           Get started <ArrowRight className="size-4" />
@@ -183,8 +186,8 @@ function Hero() {
             income.
           </p>
           <div className="mt-9 flex flex-wrap gap-3">
-            <CTA href="/enroll">Join as a customer</CTA>
-            <CTA href="/join-as-chef" secondary>
+            <CTA href="/soru-auth?role=customer">Join as a customer</CTA>
+            <CTA href="/soru-auth?role=chef" secondary>
               Build your chef business
             </CTA>
           </div>
@@ -748,6 +751,12 @@ function Footer() {
             </a>
             <a href="/join-as-chef" className="hover:text-foreground">
               For chefs
+            </a>
+            <a href="/app" className="hover:text-foreground">
+              Soru app
+            </a>
+            <a href="/chef-studio" className="hover:text-foreground">
+              Chef studio
             </a>
             <a href="/enroll" className="hover:text-foreground">
               For customers
