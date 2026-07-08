@@ -17,10 +17,10 @@ import { toast } from "sonner";
 import { BrandLogo } from "@/components/brand-logo";
 import { supabase } from "@/integrations/supabase/client";
 import {
-  buildLunchboxSummary,
-  buildMealPlanSummary,
   currency,
   db,
+  formatAiRecommendation,
+  generateAiRecommendation,
   getCurrentUser,
   joinList,
   lunchboxGoalOptions,
@@ -164,16 +164,18 @@ function CustomerAppPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="mobile-app-screen min-h-screen bg-background">
       <AppHeader onSignOut={signOut} profile={profile} />
-      <main className="container-x py-8 md:py-10">
-        <section className="rounded-[2rem] border border-border bg-card p-6 shadow-soft md:p-8">
+      <main className="container-x py-5 md:py-10">
+        <section className="rounded-[1.6rem] border border-border bg-card p-5 shadow-soft md:rounded-[2rem] md:p-8">
           <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.22em] text-muted-foreground">
                 Customer dashboard
               </p>
-              <h1 className="mt-3 text-3xl font-semibold md:text-5xl">Food that fits your life.</h1>
+              <h1 className="mt-3 text-3xl font-semibold leading-none md:text-5xl">
+                Food that fits your life.
+              </h1>
               <p className="mt-3 max-w-2xl text-muted-foreground">
                 Explore nearby chefs, request subscriptions, personalize nutrition plans, and build
                 healthy lunchboxes for kids.
@@ -188,7 +190,7 @@ function CustomerAppPage() {
           </div>
         </section>
 
-        <div className="mt-6 flex gap-2 overflow-x-auto pb-2">
+        <div className="mt-6 hidden gap-2 overflow-x-auto pb-2 md:flex">
           <TabButton active={tab === "explore"} onClick={() => setTab("explore")} icon={<Search />}>
             Explore
           </TabButton>
@@ -265,6 +267,7 @@ function CustomerAppPage() {
           </>
         )}
       </main>
+      <MobileTabBar active={tab} setTab={setTab} />
     </div>
   );
 }
@@ -290,6 +293,39 @@ function AppHeader({ profile, onSignOut }: { profile: Profile | null; onSignOut:
         </div>
       </div>
     </header>
+  );
+}
+
+function MobileTabBar({ active, setTab }: { active: Tab; setTab: (tab: Tab) => void }) {
+  const items: Array<{ tab: Tab; label: string; icon: React.ReactElement }> = [
+    { tab: "explore", label: "Explore", icon: <Search /> },
+    { tab: "subscriptions", label: "Plans", icon: <CalendarDays /> },
+    { tab: "meal-plans", label: "AI Meals", icon: <Sparkles /> },
+    { tab: "lunchbox", label: "Kids", icon: <HeartPulse /> },
+    { tab: "orders", label: "Orders", icon: <PackageCheck /> },
+  ];
+
+  return (
+    <nav className="mobile-tabbar fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card/95 px-2 pt-2 backdrop-blur-xl md:hidden">
+      <div className="mx-auto grid max-w-md grid-cols-5 gap-1">
+        {items.map((item) => {
+          const selected = active === item.tab;
+          return (
+            <button
+              key={item.tab}
+              type="button"
+              onClick={() => setTab(item.tab)}
+              className={`flex min-h-14 flex-col items-center justify-center gap-1 rounded-2xl text-[0.68rem] font-extrabold ${
+                selected ? "bg-primary text-primary-foreground" : "text-muted-foreground"
+              }`}
+            >
+              <span className="[&_svg]:size-5">{item.icon}</span>
+              {item.label}
+            </button>
+          );
+        })}
+      </div>
+    </nav>
   );
 }
 
@@ -630,16 +666,29 @@ function MealPlanSection({
       toast.error("Please add your goal and city.");
       return;
     }
-    const aiSummary = buildMealPlanSummary({
-      goal: form.goal,
-      nutritionFocus: focus,
-      dietType: form.diet_type,
-      allergies: form.allergies,
-      mealsPerDay: Number(form.meals_per_day),
-      budgetRange: form.budget_range,
-      notes: form.notes,
-    });
     setSaving(true);
+    let aiSummary = "";
+    try {
+      const ai = await generateAiRecommendation({
+        kind: "meal_plan",
+        payload: {
+          goal: form.goal,
+          nutrition_focus: focus,
+          diet_type: form.diet_type,
+          allergies: form.allergies,
+          meals_per_day: Number(form.meals_per_day),
+          budget_range: form.budget_range,
+          city: form.city,
+          notes: form.notes,
+        },
+      });
+      aiSummary = formatAiRecommendation(ai.recommendation);
+    } catch (error) {
+      setSaving(false);
+      toast.error(error instanceof Error ? error.message : "AI recommendation failed.");
+      return;
+    }
+
     const { error } = await db.from("meal_plan_requests").insert({
       user_id: userId,
       goal: form.goal,
@@ -657,7 +706,7 @@ function MealPlanSection({
       toast.error("Could not save meal-plan request.");
       return;
     }
-    toast.success("Personalized meal-plan request saved.");
+    toast.success("AI meal recommendation saved.");
     await afterSave();
   }
 
@@ -667,7 +716,7 @@ function MealPlanSection({
         <SectionTitle
           icon={<Sparkles />}
           title="Personalised nutrition meal plans"
-          text="Tell Soru your goal, allergies, budget, and food style. We’ll create a chef-ready brief."
+          text="Tell Soru your goal, allergies, budget, and food style. AI creates a chef-ready recommendation."
         />
         <div className="mt-6 grid gap-4 md:grid-cols-2">
           <Field label="Primary goal">
@@ -747,7 +796,7 @@ function MealPlanSection({
           disabled={saving}
           className="mt-5 rounded-full bg-primary px-6 py-3 text-sm font-bold text-primary-foreground disabled:opacity-60"
         >
-          {saving ? "Saving…" : "Create meal-plan brief"}
+          {saving ? "Generating AI recommendation…" : "Generate AI meal plan"}
         </button>
       </form>
 
@@ -786,15 +835,29 @@ function LunchboxSection({
       toast.error("Please add your city.");
       return;
     }
-    const recommendation = buildLunchboxSummary({
-      childAge: form.child_age,
-      preferences: form.preferences,
-      dislikes: form.dislikes,
-      allergies: form.allergies,
-      healthGoals: goals,
-      schoolTiming: form.school_timing,
-    });
     setSaving(true);
+    let recommendation = "";
+    try {
+      const ai = await generateAiRecommendation({
+        kind: "lunchbox",
+        payload: {
+          child_age: form.child_age,
+          preferences: form.preferences,
+          dislikes: form.dislikes,
+          allergies: form.allergies,
+          health_goals: goals,
+          school_timing: form.school_timing,
+          budget_range: form.budget_range,
+          city: form.city,
+        },
+      });
+      recommendation = formatAiRecommendation(ai.recommendation);
+    } catch (error) {
+      setSaving(false);
+      toast.error(error instanceof Error ? error.message : "AI recommendation failed.");
+      return;
+    }
+
     const { error } = await db.from("lunchbox_requests").insert({
       user_id: userId,
       child_age: form.child_age || null,
@@ -812,7 +875,7 @@ function LunchboxSection({
       toast.error("Could not save lunchbox request.");
       return;
     }
-    toast.success("Lunchbox request saved.");
+    toast.success("AI lunchbox recommendation saved.");
     await afterSave();
   }
 
@@ -822,7 +885,7 @@ function LunchboxSection({
         <SectionTitle
           icon={<HeartPulse />}
           title="Kids lunchbox customization"
-          text="Build lunchboxes around kids’ preferences while nudging the plan toward healthier choices."
+          text="AI turns kids’ preferences into healthier chef-ready lunchbox recommendations."
         />
         <div className="mt-6 grid gap-4 md:grid-cols-2">
           <Field label="Child age">
@@ -890,7 +953,7 @@ function LunchboxSection({
           disabled={saving}
           className="mt-5 rounded-full bg-primary px-6 py-3 text-sm font-bold text-primary-foreground disabled:opacity-60"
         >
-          {saving ? "Saving…" : "Request lunchbox plan"}
+          {saving ? "Generating AI recommendation…" : "Generate AI lunchbox plan"}
         </button>
       </form>
 
@@ -978,7 +1041,7 @@ function HistoryCard({ title, items, empty }: { title: string; items: any[]; emp
                 <StatusPill status={item.status} />
               </div>
               {(item.ai_summary || item.recommendation_summary || item.notes) && (
-                <p className="mt-3 text-xs leading-5 text-muted-foreground">
+                <p className="mt-3 whitespace-pre-line text-xs leading-5 text-muted-foreground">
                   {item.ai_summary || item.recommendation_summary || item.notes}
                 </p>
               )}
@@ -1112,7 +1175,7 @@ const inputStyles = `
     border: 1px solid var(--border);
     background: var(--background);
     padding: 0.78rem 0.95rem;
-    font-size: 0.95rem;
+    font-size: 16px;
     color: var(--foreground);
     outline: none;
   }

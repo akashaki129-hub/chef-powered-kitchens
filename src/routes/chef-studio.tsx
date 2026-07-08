@@ -137,7 +137,7 @@ function ChefStudioPage() {
   }, [application]);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="mobile-app-screen min-h-screen bg-background">
       <header className="sticky top-0 z-30 border-b border-border/60 bg-background/90 backdrop-blur">
         <div className="container-x flex h-16 items-center justify-between">
           <Link to="/" aria-label="Soru home">
@@ -161,14 +161,14 @@ function ChefStudioPage() {
         </div>
       </header>
 
-      <main className="container-x py-8 md:py-10">
-        <section className="rounded-[2rem] border border-border bg-card p-6 shadow-soft md:p-8">
+      <main className="container-x py-5 md:py-10">
+        <section className="rounded-[1.6rem] border border-border bg-card p-5 shadow-soft md:rounded-[2rem] md:p-8">
           <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.22em] text-muted-foreground">
                 Chef Studio
               </p>
-              <h1 className="mt-3 text-3xl font-semibold md:text-5xl">
+              <h1 className="mt-3 text-3xl font-semibold leading-none md:text-5xl">
                 Build your chef business on Soru.
               </h1>
               <p className="mt-3 max-w-2xl text-muted-foreground">
@@ -185,7 +185,7 @@ function ChefStudioPage() {
           </div>
         </section>
 
-        <div className="mt-6 flex gap-2 overflow-x-auto pb-2">
+        <div className="mt-6 hidden gap-2 overflow-x-auto pb-2 md:flex">
           <TabButton
             active={tab === "enrollment"}
             onClick={() => setTab("enrollment")}
@@ -243,7 +243,40 @@ function ChefStudioPage() {
           </>
         )}
       </main>
+      <ChefMobileTabBar active={tab} setTab={setTab} />
     </div>
+  );
+}
+
+function ChefMobileTabBar({ active, setTab }: { active: Tab; setTab: (tab: Tab) => void }) {
+  const items: Array<{ tab: Tab; label: string; icon: React.ReactElement }> = [
+    { tab: "enrollment", label: "Apply", icon: <ClipboardCheck /> },
+    { tab: "profile", label: "Profile", icon: <Store /> },
+    { tab: "menu", label: "Menu", icon: <Plus /> },
+    { tab: "orders", label: "Orders", icon: <BookOpenCheck /> },
+  ];
+
+  return (
+    <nav className="mobile-tabbar fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card/95 px-3 pt-2 backdrop-blur-xl md:hidden">
+      <div className="mx-auto grid max-w-sm grid-cols-4 gap-1">
+        {items.map((item) => {
+          const selected = active === item.tab;
+          return (
+            <button
+              key={item.tab}
+              type="button"
+              onClick={() => setTab(item.tab)}
+              className={`flex min-h-14 flex-col items-center justify-center gap-1 rounded-2xl text-[0.68rem] font-extrabold ${
+                selected ? "bg-primary text-primary-foreground" : "text-muted-foreground"
+              }`}
+            >
+              <span className="[&_svg]:size-5">{item.icon}</span>
+              {item.label}
+            </button>
+          );
+        })}
+      </div>
+    </nav>
   );
 }
 
@@ -1081,7 +1114,7 @@ const inputStyles = `
     border: 1px solid var(--border);
     background: var(--background);
     padding: 0.78rem 0.95rem;
-    font-size: 0.95rem;
+    font-size: 16px;
     color: var(--foreground);
     outline: none;
   }

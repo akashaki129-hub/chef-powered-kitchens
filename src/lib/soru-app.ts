@@ -106,6 +106,22 @@ export type LunchboxRequest = {
   created_at: string;
 };
 
+export type AiRecommendation = {
+  title: string;
+  summary: string;
+  safety_note: string;
+  daily_targets: string[];
+  meal_recommendations: Array<{
+    meal: string;
+    recommendation: string;
+    why_it_fits: string;
+    chef_note: string;
+  }>;
+  chef_instructions: string[];
+  avoid_or_watch: string[];
+  next_steps: string[];
+};
+
 export const chefTypeOptions = [
   ["home_cook", "Home cook"],
   ["homemaker", "Homemaker"],
@@ -206,6 +222,50 @@ export function buildMealPlanSummary(input: {
       ? `Customer note: ${input.notes.trim()}`
       : "Chef can recommend a simple weekly rotation.",
   ].join(" ");
+}
+
+export function formatAiRecommendation(recommendation: AiRecommendation) {
+  const meals = recommendation.meal_recommendations
+    .map(
+      (item) =>
+        `${item.meal}: ${item.recommendation} Why it fits: ${item.why_it_fits} Chef note: ${item.chef_note}`,
+    )
+    .join("\n");
+  return [
+    recommendation.title,
+    "",
+    recommendation.summary,
+    "",
+    `Safety note: ${recommendation.safety_note}`,
+    "",
+    `Daily targets: ${recommendation.daily_targets.join("; ")}`,
+    "",
+    "Recommendations:",
+    meals,
+    "",
+    `Chef instructions: ${recommendation.chef_instructions.join("; ")}`,
+    "",
+    `Avoid/watch: ${recommendation.avoid_or_watch.join("; ")}`,
+    "",
+    `Next steps: ${recommendation.next_steps.join("; ")}`,
+  ].join("\n");
+}
+
+export async function generateAiRecommendation(input: {
+  kind: "meal_plan" | "lunchbox";
+  payload: Record<string, unknown>;
+}) {
+  const { data, error } = await supabase.functions.invoke<{
+    recommendation: AiRecommendation;
+    model: string;
+    generated_at: string;
+  }>("soru-ai-recommendations", {
+    body: input,
+  });
+
+  if (error) throw new Error(error.message || "AI recommendation failed.");
+  if (!data?.recommendation) throw new Error("AI recommendation failed.");
+  return data;
 }
 
 export function buildLunchboxSummary(input: {

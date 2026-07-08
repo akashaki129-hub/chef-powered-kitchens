@@ -103,7 +103,7 @@ function SoruAuthPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="mobile-app-screen min-h-screen bg-background">
       <header className="border-b border-border/60 bg-background/90 backdrop-blur">
         <div className="container-x flex h-16 items-center justify-between">
           <Link to="/" aria-label="Soru home">
@@ -120,13 +120,13 @@ function SoruAuthPage() {
         </div>
       </header>
 
-      <main className="container-x grid gap-10 py-12 md:grid-cols-[1fr_28rem] md:py-20">
+      <main className="container-x grid gap-7 py-6 md:grid-cols-[1fr_28rem] md:gap-10 md:py-20">
         <section className="flex flex-col justify-center">
           <div className="max-w-2xl">
             <p className="inline-flex rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.2em] text-foreground">
               Soru App
             </p>
-            <h1 className="mt-6 text-balance text-4xl font-semibold tracking-tight md:text-6xl">
+            <h1 className="mt-6 text-balance text-4xl font-semibold leading-none tracking-tight md:text-6xl">
               One home for customers, chefs, and personalised food.
             </h1>
             <p className="mt-5 max-w-xl text-lg text-muted-foreground">
@@ -151,10 +151,17 @@ function SoruAuthPage() {
                 text="Guided license readiness."
               />
             </div>
+            <div className="mt-5 rounded-3xl border border-primary/25 bg-primary/10 p-4 text-sm text-foreground md:hidden">
+              <div className="font-extrabold">Install Soru on your phone</div>
+              <p className="mt-1 text-xs leading-5 text-muted-foreground">
+                Open this page in Safari or Chrome, then use “Add to Home Screen” for the app-style
+                experience.
+              </p>
+            </div>
           </div>
         </section>
 
-        <section className="rounded-[2rem] border border-border bg-card p-6 shadow-soft md:p-8">
+        <section className="rounded-[1.6rem] border border-border bg-card p-5 shadow-soft md:rounded-[2rem] md:p-8">
           {needsEmailCheck ? (
             <div className="py-8 text-center">
               <div className="mx-auto flex size-14 items-center justify-center rounded-2xl bg-primary/15">
@@ -312,7 +319,7 @@ const inputStyles = `
     border: 1px solid var(--border);
     background: var(--background);
     padding: 0.78rem 0.95rem;
-    font-size: 0.95rem;
+    font-size: 16px;
     color: var(--foreground);
     outline: none;
     transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;

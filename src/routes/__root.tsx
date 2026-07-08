@@ -14,6 +14,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Toaster } from "@/components/ui/sonner";
 import { SiteVisitTracker } from "@/components/site-visit-tracker";
+import { MobileAppInstaller } from "@/components/mobile-app-installer";
 
 function NotFoundComponent() {
   return (
@@ -80,6 +81,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { name: "theme-color", content: "#F5B51B" },
+      { name: "apple-mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-status-bar-style", content: "default" },
+      { name: "apple-mobile-web-app-title", content: "Soru" },
+      { name: "mobile-web-app-capable", content: "yes" },
       { title: "Soru — Every chef’s special, closer to home." },
       {
         name: "description",
@@ -113,6 +119,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     ],
     links: [
       { rel: "stylesheet", href: appCss },
+      { rel: "manifest", href: "/manifest.webmanifest" },
+      { rel: "icon", href: "/soru-icon.svg", type: "image/svg+xml" },
+      { rel: "apple-touch-icon", href: "/soru-icon.svg" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
@@ -149,6 +158,7 @@ function RootComponent() {
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
       <SiteVisitTracker />
+      <MobileAppInstaller />
       <Toaster />
       <Analytics />
     </QueryClientProvider>
