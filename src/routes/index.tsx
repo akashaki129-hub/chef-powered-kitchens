@@ -14,6 +14,7 @@ import {
   ShieldCheck,
   Sparkles,
   Store,
+  Smartphone,
   Users,
   UtensilsCrossed,
   type LucideIcon,
@@ -116,7 +117,13 @@ const serviceGroups: ServiceGroup[] = [
   },
 ];
 
+const isAppOnlyDeployment = import.meta.env.VITE_SORU_APP_ONLY === "true";
+
 function Landing() {
+  if (isAppOnlyDeployment) {
+    return <AppGateway />;
+  }
+
   return (
     <div className="min-h-screen overflow-hidden bg-background text-foreground">
       <Nav />
@@ -131,6 +138,97 @@ function Landing() {
       </main>
       <Footer />
       <MarketFeedbackSurvey />
+    </div>
+  );
+}
+
+function AppGateway() {
+  return (
+    <div className="min-h-screen overflow-hidden bg-[color:var(--ink)] text-white">
+      <div className="hero-mesh pointer-events-none fixed inset-0 opacity-80" />
+      <main className="container-x relative flex min-h-screen items-center py-10">
+        <section className="mx-auto grid w-full max-w-6xl items-center gap-10 lg:grid-cols-[1fr_.82fr]">
+          <div>
+            <BrandLogo className="brightness-0 invert" />
+            <Pill dark>
+              <Smartphone className="size-3.5" /> Soru mobile app
+            </Pill>
+            <h1 className="mt-7 max-w-3xl text-balance font-display text-[clamp(3rem,8vw,6.2rem)] font-medium leading-[.9] tracking-[-0.055em]">
+              Every chef’s special,
+              <span className="block italic text-[color:var(--saffron)]">closer to home.</span>
+            </h1>
+            <p className="mt-6 max-w-2xl text-balance text-base leading-7 text-white/68 md:text-lg">
+              Sign in to discover verified chefs, customize subscriptions, request AI-assisted
+              nutrition plans, or build your chef business on Soru.
+            </p>
+            <div className="mt-8 grid gap-3 sm:max-w-xl sm:grid-cols-2">
+              <CTA href="/soru-auth?role=customer">Join as a customer</CTA>
+              <CTA href="/soru-auth?role=chef" secondary>
+                Build your chef business
+              </CTA>
+            </div>
+            <div className="mt-6 flex flex-wrap gap-2 text-xs text-white/70">
+              {[
+                "Personalized meal plans",
+                "Student lunchboxes",
+                "Chef menus",
+                "FSSAI guidance",
+              ].map((item) => (
+                <span key={item} className="rounded-full border border-white/12 bg-white/5 px-3 py-1.5">
+                  {item}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div className="rounded-[2rem] border border-white/12 bg-white/[0.07] p-4 shadow-2xl backdrop-blur-xl">
+            <div className="rounded-[1.5rem] bg-white p-4 text-[color:var(--ink)]">
+              <div className="rounded-[1.25rem] bg-[color:var(--cream)] p-5">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs font-bold uppercase tracking-[.18em] text-muted-foreground">
+                      Today on Soru
+                    </p>
+                    <h2 className="mt-2 font-display text-3xl tracking-[-0.04em]">
+                      Food that fits your life.
+                    </h2>
+                  </div>
+                  <div className="grid size-12 place-items-center rounded-2xl bg-[color:var(--saffron)]">
+                    <UtensilsCrossed className="size-6" />
+                  </div>
+                </div>
+                <div className="mt-6 grid gap-3">
+                  {[
+                    ["Explore chefs", "Find nearby verified chefs and home cooks."],
+                    ["Meal plans", "Request nutrition-aware subscriptions."],
+                    ["Lunchbox", "Customize healthier meals for kids and students."],
+                    ["Chef Studio", "Apply, add menus, manage orders, and grow."],
+                  ].map(([title, copy]) => (
+                    <div key={title} className="rounded-2xl border border-border bg-white p-4">
+                      <div className="font-semibold">{title}</div>
+                      <p className="mt-1 text-sm leading-6 text-muted-foreground">{copy}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                <a
+                  href="/app"
+                  className="rounded-2xl bg-[color:var(--ink)] px-4 py-3 text-center text-sm font-semibold text-white"
+                >
+                  Customer dashboard
+                </a>
+                <a
+                  href="/chef-studio"
+                  className="rounded-2xl border border-border px-4 py-3 text-center text-sm font-semibold"
+                >
+                  Chef Studio
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
     </div>
   );
 }
