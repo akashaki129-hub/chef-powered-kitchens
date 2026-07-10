@@ -11,14 +11,17 @@ import {
   Search,
   Sparkles,
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import { BrandLogo } from "@/components/brand-logo";
 import { supabase } from "@/integrations/supabase/client";
 import {
+  buildLunchboxSummary,
+  buildMealPlanSummary,
   currency,
   db,
+  ensureProfileForUser,
   formatAiRecommendation,
   generateAiRecommendation,
   getCurrentUser,
@@ -32,6 +35,7 @@ import {
   type MenuItem,
   type Profile,
   type Subscription,
+  upsertProfile,
 } from "@/lib/soru-app";
 
 export const Route = createFileRoute("/app")({
@@ -57,11 +61,7 @@ function CustomerAppPage() {
   const [tab, setTab] = useState<Tab>("explore");
   const [cityFilter, setCityFilter] = useState("");
 
-  useEffect(() => {
-    void load();
-  }, []);
-
-  async function load() {
+  const load = useCallback(async () => {
     setLoading(true);
     const user = await getCurrentUser();
     if (!user) {
@@ -79,30 +79,30 @@ function CustomerAppPage() {
       mealPlansRes,
       lunchboxesRes,
     ] = await Promise.all([
-      db.from("profiles").select("*").eq("user_id", user.id).maybeSingle(),
-      db.from("chef_profiles").select("*").order("created_at", { ascending: false }),
+      db.from<Profile>("profiles").select("*").eq("user_id", user.id).maybeSingle(),
+      db.from<ChefProfile>("chef_profiles").select("*").order("created_at", { ascending: false }),
       db
-        .from("chef_menu_items")
+        .from<MenuItem>("chef_menu_items")
         .select("*")
         .eq("is_active", true)
         .order("created_at", { ascending: false }),
       db
-        .from("customer_orders")
+        .from<CustomerOrder>("customer_orders")
         .select("*")
         .eq("user_id", user.id)
         .order("created_at", { ascending: false }),
       db
-        .from("customer_subscriptions")
+        .from<Subscription>("customer_subscriptions")
         .select("*")
         .eq("user_id", user.id)
         .order("created_at", { ascending: false }),
       db
-        .from("meal_plan_requests")
+        .from<MealPlanRequest>("meal_plan_requests")
         .select("*")
         .eq("user_id", user.id)
         .order("created_at", { ascending: false }),
       db
-        .from("lunchbox_requests")
+        .from<LunchboxRequest>("lunchbox_requests")
         .select("*")
         .eq("user_id", user.id)
         .order("created_at", { ascending: false }),
@@ -111,16 +111,24 @@ function CustomerAppPage() {
     if (profileRes.error) toast.error("Could not load your profile.");
     if (chefsRes.error || menusRes.error) toast.error("Could not load chefs yet.");
 
-    setProfile(profileRes.data || null);
+    const repairedProfile =
+      !profileRes.error && !profileRes.data ? await ensureProfileForUser(user, "customer") : null;
+    const activeProfile = profileRes.data || repairedProfile?.data || null;
+
+    setProfile(activeProfile);
     setChefs(chefsRes.data || []);
     setMenus(menusRes.data || []);
     setOrders(ordersRes.data || []);
     setSubscriptions(subscriptionsRes.data || []);
     setMealPlans(mealPlansRes.data || []);
     setLunchboxes(lunchboxesRes.data || []);
-    setCityFilter(profileRes.data?.city || "");
+    setCityFilter(activeProfile?.city || "");
     setLoading(false);
-  }
+  }, [navigate]);
+
+  useEffect(() => {
+    void load();
+  }, [load]);
 
   async function signOut() {
     await supabase.auth.signOut();
@@ -142,7 +150,7 @@ function CustomerAppPage() {
       return;
     }
     setSaving(true);
-    const { error } = await db.from("customer_orders").insert({
+    const { error } = await db.from<CustomerOrder>("customer_orders").insert({
       user_id: userId,
       chef_profile_id: chef.id,
       menu_item_id: menu.id,
@@ -228,6 +236,9 @@ function CustomerAppPage() {
           <EmptyCard title="Loading Soru…" text="Getting your dashboard ready." />
         ) : (
           <>
+            {!profile?.city && (
+              <ProfileCompletionCard userId={userId} profile={profile} afterSave={load} />
+            )}
             {tab === "explore" && (
               <ExploreSection
                 chefs={sortedChefs}
@@ -326,6 +337,92 @@ function MobileTabBar({ active, setTab }: { active: Tab; setTab: (tab: Tab) => v
         })}
       </div>
     </nav>
+  );
+}
+
+function ProfileCompletionCard({
+  userId,
+  profile,
+  afterSave,
+}: {
+  userId: string;
+  profile: Profile | null;
+  afterSave: () => Promise<void>;
+}) {
+  const [form, setForm] = useState({
+    fullName: profile?.full_name || "",
+    phone: profile?.phone || "",
+    city: profile?.city || "",
+  });
+  const [saving, setSaving] = useState(false);
+
+  async function save(event: React.FormEvent) {
+    event.preventDefault();
+    if (form.fullName.trim().length < 2 || form.city.trim().length < 2) {
+      toast.error("Please add your name and city.");
+      return;
+    }
+    setSaving(true);
+    const { error } = await upsertProfile({
+      userId,
+      fullName: form.fullName,
+      phone: form.phone,
+      city: form.city,
+      defaultRole: profile?.default_role || "customer",
+    });
+    setSaving(false);
+    if (error) {
+      toast.error("Could not save your profile.");
+      return;
+    }
+    toast.success("Profile updated.");
+    await afterSave();
+  }
+
+  return (
+    <form
+      onSubmit={save}
+      className="mt-6 rounded-3xl border border-primary/30 bg-primary/10 p-5 shadow-soft md:p-6"
+    >
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-end">
+        <div className="min-w-0 flex-1">
+          <h2 className="text-xl font-semibold">Complete your Soru profile</h2>
+          <p className="mt-1 text-sm leading-6 text-muted-foreground">
+            Add your city so Soru can match you with nearby chefs, subscriptions, and lunchbox
+            options.
+          </p>
+        </div>
+        <div className="grid flex-[2] gap-3 md:grid-cols-3">
+          <input
+            required
+            value={form.fullName}
+            onChange={(e) => setForm({ ...form, fullName: e.target.value })}
+            className="app-input bg-background"
+            placeholder="Full name"
+          />
+          <input
+            value={form.phone}
+            onChange={(e) => setForm({ ...form, phone: e.target.value })}
+            className="app-input bg-background"
+            placeholder="Phone"
+          />
+          <input
+            required
+            value={form.city}
+            onChange={(e) => setForm({ ...form, city: e.target.value })}
+            className="app-input bg-background"
+            placeholder="City"
+          />
+        </div>
+        <button
+          disabled={saving}
+          className="rounded-full bg-primary px-5 py-3 text-sm font-bold text-primary-foreground disabled:opacity-60"
+        >
+          {saving ? "Saving…" : "Save profile"}
+        </button>
+      </div>
+      <style>{inputStyles}</style>
+    </form>
   );
 }
 
@@ -485,7 +582,7 @@ function SubscriptionSection({
       return;
     }
     setSaving(true);
-    const { error } = await db.from("customer_subscriptions").insert({
+    const { error } = await db.from<Subscription>("customer_subscriptions").insert({
       user_id: userId,
       chef_profile_id: form.chef_profile_id || null,
       plan_type: form.plan_type,
@@ -667,7 +764,40 @@ function MealPlanSection({
       return;
     }
     setSaving(true);
-    let aiSummary = "";
+
+    const brief = buildMealPlanSummary({
+      goal: form.goal,
+      nutritionFocus: focus,
+      dietType: form.diet_type,
+      allergies: form.allergies,
+      mealsPerDay: Number(form.meals_per_day),
+      budgetRange: form.budget_range,
+      notes: form.notes,
+    });
+
+    const { data: savedRequest, error } = await db
+      .from<MealPlanRequest>("meal_plan_requests")
+      .insert({
+        user_id: userId,
+        goal: form.goal,
+        nutrition_focus: focus,
+        diet_type: form.diet_type,
+        allergies: form.allergies || null,
+        meals_per_day: Number(form.meals_per_day),
+        budget_range: form.budget_range,
+        city: form.city,
+        notes: form.notes || null,
+        ai_summary: `AI recommendation pending. Chef-ready brief: ${brief}`,
+      })
+      .select("*")
+      .maybeSingle();
+    if (error) {
+      setSaving(false);
+      toast.error("Could not save meal-plan request.");
+      return;
+    }
+
+    let aiSaved = false;
     try {
       const ai = await generateAiRecommendation({
         kind: "meal_plan",
@@ -682,31 +812,23 @@ function MealPlanSection({
           notes: form.notes,
         },
       });
-      aiSummary = formatAiRecommendation(ai.recommendation);
-    } catch (error) {
-      setSaving(false);
-      toast.error(error instanceof Error ? error.message : "AI recommendation failed.");
-      return;
+      const aiSummary = formatAiRecommendation(ai.recommendation);
+      if (savedRequest?.id) {
+        const update = await db
+          .from<MealPlanRequest>("meal_plan_requests")
+          .update({ ai_summary: aiSummary })
+          .eq("id", savedRequest.id);
+        aiSaved = !update.error;
+      }
+    } catch {
+      aiSaved = false;
     }
-
-    const { error } = await db.from("meal_plan_requests").insert({
-      user_id: userId,
-      goal: form.goal,
-      nutrition_focus: focus,
-      diet_type: form.diet_type,
-      allergies: form.allergies || null,
-      meals_per_day: Number(form.meals_per_day),
-      budget_range: form.budget_range,
-      city: form.city,
-      notes: form.notes || null,
-      ai_summary: aiSummary,
-    });
     setSaving(false);
-    if (error) {
-      toast.error("Could not save meal-plan request.");
-      return;
-    }
-    toast.success("AI meal recommendation saved.");
+    toast.success(
+      aiSaved
+        ? "Meal-plan request saved with AI recommendation."
+        : "Meal-plan request saved. AI is temporarily unavailable, so Soru saved your brief for follow-up.",
+    );
     await afterSave();
   }
 
@@ -796,7 +918,7 @@ function MealPlanSection({
           disabled={saving}
           className="mt-5 rounded-full bg-primary px-6 py-3 text-sm font-bold text-primary-foreground disabled:opacity-60"
         >
-          {saving ? "Generating AI recommendation…" : "Generate AI meal plan"}
+          {saving ? "Saving request…" : "Generate AI meal plan"}
         </button>
       </form>
 
@@ -836,7 +958,39 @@ function LunchboxSection({
       return;
     }
     setSaving(true);
-    let recommendation = "";
+
+    const brief = buildLunchboxSummary({
+      childAge: form.child_age,
+      preferences: form.preferences,
+      dislikes: form.dislikes,
+      allergies: form.allergies,
+      healthGoals: goals,
+      schoolTiming: form.school_timing,
+    });
+
+    const { data: savedRequest, error } = await db
+      .from<LunchboxRequest>("lunchbox_requests")
+      .insert({
+        user_id: userId,
+        child_age: form.child_age || null,
+        preferences: form.preferences || null,
+        dislikes: form.dislikes || null,
+        allergies: form.allergies || null,
+        health_goals: goals,
+        school_timing: form.school_timing || null,
+        budget_range: form.budget_range,
+        city: form.city,
+        recommendation_summary: `AI recommendation pending. Chef-ready brief: ${brief}`,
+      })
+      .select("*")
+      .maybeSingle();
+    if (error) {
+      setSaving(false);
+      toast.error("Could not save lunchbox request.");
+      return;
+    }
+
+    let aiSaved = false;
     try {
       const ai = await generateAiRecommendation({
         kind: "lunchbox",
@@ -851,31 +1005,23 @@ function LunchboxSection({
           city: form.city,
         },
       });
-      recommendation = formatAiRecommendation(ai.recommendation);
-    } catch (error) {
-      setSaving(false);
-      toast.error(error instanceof Error ? error.message : "AI recommendation failed.");
-      return;
+      const recommendation = formatAiRecommendation(ai.recommendation);
+      if (savedRequest?.id) {
+        const update = await db
+          .from<LunchboxRequest>("lunchbox_requests")
+          .update({ recommendation_summary: recommendation })
+          .eq("id", savedRequest.id);
+        aiSaved = !update.error;
+      }
+    } catch {
+      aiSaved = false;
     }
-
-    const { error } = await db.from("lunchbox_requests").insert({
-      user_id: userId,
-      child_age: form.child_age || null,
-      preferences: form.preferences || null,
-      dislikes: form.dislikes || null,
-      allergies: form.allergies || null,
-      health_goals: goals,
-      school_timing: form.school_timing || null,
-      budget_range: form.budget_range,
-      city: form.city,
-      recommendation_summary: recommendation,
-    });
     setSaving(false);
-    if (error) {
-      toast.error("Could not save lunchbox request.");
-      return;
-    }
-    toast.success("AI lunchbox recommendation saved.");
+    toast.success(
+      aiSaved
+        ? "Lunchbox request saved with AI recommendation."
+        : "Lunchbox request saved. AI is temporarily unavailable, so Soru saved your brief for follow-up.",
+    );
     await afterSave();
   }
 
@@ -1014,7 +1160,26 @@ function OrdersSection({
   );
 }
 
-function HistoryCard({ title, items, empty }: { title: string; items: any[]; empty: string }) {
+type HistoryItem = {
+  id: string;
+  created_at: string;
+  status: string;
+  plan_type?: string | null;
+  goal?: string | null;
+  recommendation_summary?: string | null;
+  ai_summary?: string | null;
+  notes?: string | null;
+};
+
+function HistoryCard({
+  title,
+  items,
+  empty,
+}: {
+  title: string;
+  items: HistoryItem[];
+  empty: string;
+}) {
   return (
     <aside className="h-fit rounded-3xl border border-border bg-card p-5 shadow-soft">
       <h2 className="text-xl font-semibold">{title}</h2>

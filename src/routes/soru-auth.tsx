@@ -5,7 +5,7 @@ import { toast } from "sonner";
 
 import { BrandLogo } from "@/components/brand-logo";
 import { supabase } from "@/integrations/supabase/client";
-import { type AppRole, upsertProfile } from "@/lib/soru-app";
+import { ensureProfileForUser, type AppRole, upsertProfile } from "@/lib/soru-app";
 
 export const Route = createFileRoute("/soru-auth")({
   ssr: false,
@@ -32,7 +32,13 @@ function SoruAuthPage() {
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
       if (!data.session) return;
-      navigate({ to: role === "chef" ? "/chef-studio" : "/app" });
+      void ensureProfileForUser(data.session.user, role).then(({ data: profile }) => {
+        const preferredRole =
+          profile?.default_role ||
+          (data.session.user.user_metadata?.default_role as AppRole | undefined) ||
+          role;
+        navigate({ to: preferredRole === "chef" ? "/chef-studio" : "/app" });
+      });
     });
   }, [navigate, role]);
 
@@ -62,7 +68,11 @@ function SoruAuthPage() {
       });
 
       if (error) {
-        toast.error(error.message);
+        toast.error(
+          error.message.toLowerCase().includes("rate limit")
+            ? "Email sign-up is temporarily rate-limited. Please try again shortly."
+            : error.message,
+        );
         setLoading(false);
         return;
       }
@@ -97,9 +107,12 @@ function SoruAuthPage() {
     }
 
     const preferredRole = (data.user?.user_metadata?.default_role as AppRole | undefined) || role;
+    const profile = data.user ? await ensureProfileForUser(data.user, preferredRole) : null;
     toast.success("Signed in.");
     setLoading(false);
-    navigate({ to: preferredRole === "chef" ? "/chef-studio" : "/app" });
+    navigate({
+      to: (profile?.data?.default_role || preferredRole) === "chef" ? "/chef-studio" : "/app",
+    });
   }
 
   return (

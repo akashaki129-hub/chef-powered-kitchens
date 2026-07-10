@@ -174,7 +174,10 @@ function AppGateway() {
                 "Chef menus",
                 "FSSAI guidance",
               ].map((item) => (
-                <span key={item} className="rounded-full border border-white/12 bg-white/5 px-3 py-1.5">
+                <span
+                  key={item}
+                  className="rounded-full border border-white/12 bg-white/5 px-3 py-1.5"
+                >
                   {item}
                 </span>
               ))}

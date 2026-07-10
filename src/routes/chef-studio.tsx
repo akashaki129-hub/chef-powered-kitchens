@@ -10,7 +10,7 @@ import {
   Plus,
   Store,
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import { BrandLogo } from "@/components/brand-logo";
@@ -19,6 +19,7 @@ import {
   chefTypeOptions,
   currency,
   db,
+  ensureProfileForUser,
   fssaiDocumentOptions,
   fssaiSupportOptions,
   getCurrentUser,
@@ -71,11 +72,7 @@ function ChefStudioPage() {
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
   const [tab, setTab] = useState<Tab>("enrollment");
 
-  useEffect(() => {
-    void load();
-  }, []);
-
-  async function load() {
+  const load = useCallback(async () => {
     setLoading(true);
     const user = await getCurrentUser();
     if (!user) {
@@ -86,30 +83,34 @@ function ChefStudioPage() {
     setUserEmail(user.email || "");
 
     const [profileRes, applicationRes, chefProfileRes] = await Promise.all([
-      db.from("profiles").select("*").eq("user_id", user.id).maybeSingle(),
-      db.from("chef_applications").select("*").eq("user_id", user.id).maybeSingle(),
-      db.from("chef_profiles").select("*").eq("user_id", user.id).maybeSingle(),
+      db.from<Profile>("profiles").select("*").eq("user_id", user.id).maybeSingle(),
+      db
+        .from<ChefApplication>("chef_applications")
+        .select("*")
+        .eq("user_id", user.id)
+        .maybeSingle(),
+      db.from<ChefProfile>("chef_profiles").select("*").eq("user_id", user.id).maybeSingle(),
     ]);
 
     const chef = chefProfileRes.data || null;
     const [menusRes, ordersRes, subscriptionsRes] = await Promise.all([
       chef
         ? db
-            .from("chef_menu_items")
+            .from<MenuItem>("chef_menu_items")
             .select("*")
             .eq("chef_profile_id", chef.id)
             .order("created_at", { ascending: false })
         : Promise.resolve({ data: [], error: null }),
       chef
         ? db
-            .from("customer_orders")
+            .from<CustomerOrder>("customer_orders")
             .select("*")
             .eq("chef_profile_id", chef.id)
             .order("created_at", { ascending: false })
         : Promise.resolve({ data: [], error: null }),
       chef
         ? db
-            .from("customer_subscriptions")
+            .from<Subscription>("customer_subscriptions")
             .select("*")
             .eq("chef_profile_id", chef.id)
             .order("created_at", { ascending: false })
@@ -117,14 +118,21 @@ function ChefStudioPage() {
     ]);
 
     if (profileRes.error) toast.error("Could not load your Soru profile.");
-    setProfile(profileRes.data || null);
+    const repairedProfile =
+      !profileRes.error && !profileRes.data ? await ensureProfileForUser(user, "chef") : null;
+
+    setProfile(profileRes.data || repairedProfile?.data || null);
     setApplication(applicationRes.data || null);
     setChefProfile(chef);
     setMenus(menusRes.data || []);
     setOrders(ordersRes.data || []);
     setSubscriptions(subscriptionsRes.data || []);
     setLoading(false);
-  }
+  }, [navigate]);
+
+  useEffect(() => {
+    void load();
+  }, [load]);
 
   async function signOut() {
     await supabase.auth.signOut();
@@ -324,7 +332,9 @@ function EnrollmentSection({
       submitted_at:
         status === "submitted" ? new Date().toISOString() : application?.submitted_at || null,
     };
-    const { error } = await db.from("chef_applications").upsert(payload, { onConflict: "user_id" });
+    const { error } = await db
+      .from<ChefApplication>("chef_applications")
+      .upsert(payload, { onConflict: "user_id" });
     setSaving(false);
     if (error) {
       toast.error("Could not save your chef enrollment.");
@@ -523,7 +533,7 @@ function ChefProfileSection({
       return;
     }
     setSaving(true);
-    const { error } = await db.from("chef_profiles").upsert(
+    const { error } = await db.from<ChefProfile>("chef_profiles").upsert(
       {
         user_id: userId,
         ...form,
@@ -714,7 +724,7 @@ function MenuSection({
       return;
     }
     setSaving(true);
-    const { error } = await db.from("chef_menu_items").insert({
+    const { error } = await db.from<MenuItem>("chef_menu_items").insert({
       chef_profile_id: chefProfile.id,
       user_id: userId,
       ...form,
