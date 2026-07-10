@@ -219,41 +219,61 @@ Deno.serve(async (request) => {
   const payload = normalizePayload(body.kind, body.payload || {});
   const model = env("OPENAI_MODEL") || "gpt-4o-mini";
 
-  const response = await fetch("https://api.openai.com/v1/responses", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      model,
-      input: [
-        {
-          role: "system",
-          content:
-            "You are Soru's nutrition-aware food recommendation assistant. Give practical chef-ready food recommendations, not medical advice.",
-        },
-        {
-          role: "user",
-          content: promptFor(body.kind, payload),
-        },
-      ],
-      text: {
-        format: {
-          type: "json_schema",
-          name: "soru_food_recommendation",
-          strict: true,
-          schema: recommendationSchema,
-        },
+  let response: Response;
+  try {
+    response = await fetch("https://api.openai.com/v1/responses", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
       },
-    }),
-  });
+      body: JSON.stringify({
+        model,
+        input: [
+          {
+            role: "system",
+            content:
+              "You are Soru's nutrition-aware food recommendation assistant. Give practical chef-ready food recommendations, not medical advice.",
+          },
+          {
+            role: "user",
+            content: promptFor(body.kind, payload),
+          },
+        ],
+        text: {
+          format: {
+            type: "json_schema",
+            name: "soru_food_recommendation",
+            strict: true,
+            schema: recommendationSchema,
+          },
+        },
+      }),
+    });
+  } catch (error) {
+    console.error("OpenAI network error", error);
+    return Response.json(
+      {
+        error:
+          "AI recommendations are temporarily unavailable. Soru can still save your request for follow-up.",
+      },
+      { status: 503, headers: corsHeaders },
+    );
+  }
 
   if (!response.ok) {
     const detail = await response.text();
+    console.error("OpenAI request failed", {
+      status: response.status,
+      kind: body.kind,
+      detail,
+    });
     return Response.json(
-      { error: `OpenAI request failed: ${detail.slice(0, 500)}` },
-      { status: 502, headers: corsHeaders },
+      {
+        error:
+          "AI recommendations are temporarily unavailable. Soru saved requests can still be reviewed by the team.",
+      },
+      { status: 503, headers: corsHeaders },
     );
   }
 

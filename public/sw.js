@@ -1,5 +1,15 @@
-const CACHE_NAME = "soru-mobile-shell-v1";
-const APP_SHELL = ["/", "/soru-auth", "/app", "/chef-studio", "/soru-icon.svg", "/manifest.webmanifest"];
+const CACHE_NAME = "soru-mobile-shell-v2";
+const APP_SHELL = [
+  "/",
+  "/soru-auth",
+  "/app",
+  "/chef-studio",
+  "/soru-icon.svg",
+  "/soru-icon-192.png",
+  "/soru-icon-256.png",
+  "/soru-icon-512.png",
+  "/manifest.webmanifest",
+];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(

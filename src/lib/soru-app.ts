@@ -1,6 +1,23 @@
 import { supabase } from "@/integrations/supabase/client";
+import type { User } from "@supabase/supabase-js";
 
-export const db = supabase as any;
+type DbError = { message: string } | null;
+type DbListResult<T> = { data: T[] | null; error: DbError };
+type DbSingleResult<T> = { data: T | null; error: DbError };
+
+type SoruQueryBuilder<T> = PromiseLike<DbListResult<T>> & {
+  select: (columns?: string) => SoruQueryBuilder<T>;
+  eq: (column: string, value: unknown) => SoruQueryBuilder<T>;
+  order: (column: string, options?: { ascending?: boolean }) => SoruQueryBuilder<T>;
+  insert: (values: unknown) => SoruQueryBuilder<T>;
+  update: (values: unknown) => SoruQueryBuilder<T>;
+  upsert: (values: unknown, options?: { onConflict?: string }) => SoruQueryBuilder<T>;
+  maybeSingle: () => Promise<DbSingleResult<T>>;
+};
+
+export const db = supabase as unknown as {
+  from: <T>(table: string) => SoruQueryBuilder<T>;
+};
 
 export type AppRole = "customer" | "chef" | "both";
 
@@ -104,6 +121,14 @@ export type LunchboxRequest = {
   recommendation_summary: string | null;
   status: string;
   created_at: string;
+};
+
+export type ProfileInput = {
+  userId: string;
+  fullName: string;
+  phone?: string;
+  city?: string;
+  defaultRole: AppRole;
 };
 
 export type AiRecommendation = {
@@ -305,14 +330,25 @@ export async function getCurrentUser() {
   return data.user;
 }
 
-export async function upsertProfile(input: {
-  userId: string;
-  fullName: string;
-  phone?: string;
-  city?: string;
-  defaultRole: AppRole;
-}) {
-  return db.from("profiles").upsert(
+function cleanProfileText(value: unknown) {
+  return typeof value === "string" ? value.trim() : "";
+}
+
+function normalizeRole(value: unknown, fallback: AppRole): AppRole {
+  return value === "chef" || value === "both" || value === "customer" ? value : fallback;
+}
+
+function fallbackNameFromEmail(email?: string) {
+  const fromEmail =
+    email
+      ?.split("@")[0]
+      ?.replace(/[._-]+/g, " ")
+      .trim() || "";
+  return fromEmail.length >= 2 ? titleCase(fromEmail) : "Soru member";
+}
+
+export async function upsertProfile(input: ProfileInput) {
+  return db.from<Profile>("profiles").upsert(
     {
       user_id: input.userId,
       full_name: input.fullName.trim(),
@@ -322,4 +358,37 @@ export async function upsertProfile(input: {
     },
     { onConflict: "user_id" },
   );
+}
+
+export async function ensureProfileForUser(user: User, fallbackRole: AppRole) {
+  const existing = await db
+    .from<Profile>("profiles")
+    .select("*")
+    .eq("user_id", user.id)
+    .maybeSingle();
+  if (existing.error || existing.data) return existing;
+
+  const metadata = user.user_metadata || {};
+  const fullName =
+    cleanProfileText(metadata.full_name) ||
+    cleanProfileText(metadata.name) ||
+    fallbackNameFromEmail(user.email);
+
+  const profile: Profile = {
+    user_id: user.id,
+    full_name: fullName.length >= 2 ? fullName : "Soru member",
+    phone: cleanProfileText(metadata.phone) || null,
+    city: cleanProfileText(metadata.city) || null,
+    default_role: normalizeRole(metadata.default_role, fallbackRole),
+  };
+
+  const saved = await upsertProfile({
+    userId: profile.user_id,
+    fullName: profile.full_name,
+    phone: profile.phone || undefined,
+    city: profile.city || undefined,
+    defaultRole: profile.default_role,
+  });
+
+  return saved.error ? { data: null, error: saved.error } : { data: profile, error: null };
 }
