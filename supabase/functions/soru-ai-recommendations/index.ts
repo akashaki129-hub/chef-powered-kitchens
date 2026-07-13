@@ -157,6 +157,158 @@ function extractOutputText(result: Record<string, unknown>) {
   return "";
 }
 
+function extractGeminiText(result: Record<string, unknown>) {
+  const candidates = Array.isArray(result.candidates) ? result.candidates : [];
+  for (const candidate of candidates) {
+    const content =
+      typeof candidate === "object" && candidate
+        ? (candidate as Record<string, unknown>).content
+        : null;
+    const parts =
+      typeof content === "object" &&
+      content &&
+      Array.isArray((content as Record<string, unknown>).parts)
+        ? ((content as Record<string, unknown>).parts as unknown[])
+        : [];
+    for (const part of parts) {
+      if (
+        typeof part === "object" &&
+        part &&
+        typeof (part as Record<string, unknown>).text === "string"
+      ) {
+        return String((part as Record<string, unknown>).text);
+      }
+    }
+  }
+  return "";
+}
+
+async function generateWithGemini(input: {
+  kind: RecommendationKind;
+  payload: Record<string, unknown>;
+  apiKey: string;
+  model: string;
+}) {
+  let response: Response;
+  try {
+    response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${input.model}:generateContent?key=${input.apiKey}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          systemInstruction: {
+            parts: [
+              {
+                text: "You are Soru's nutrition-aware food recommendation assistant. Give practical chef-ready food recommendations, not medical advice.",
+              },
+            ],
+          },
+          contents: [
+            {
+              role: "user",
+              parts: [{ text: promptFor(input.kind, input.payload) }],
+            },
+          ],
+          generationConfig: {
+            temperature: 0.45,
+            responseMimeType: "application/json",
+            responseSchema: recommendationSchema,
+          },
+        }),
+      },
+    );
+  } catch (error) {
+    console.error("Gemini network error", error);
+    throw new Error("gemini_unavailable");
+  }
+
+  if (!response.ok) {
+    const detail = await response.text();
+    console.error("Gemini request failed", {
+      status: response.status,
+      kind: input.kind,
+      detail,
+    });
+    throw new Error("gemini_unavailable");
+  }
+
+  const result = await response.json();
+  const outputText = extractGeminiText(result);
+  if (!outputText) throw new Error("gemini_empty_response");
+
+  return {
+    recommendation: JSON.parse(outputText),
+    model: input.model,
+    provider: "gemini",
+    generated_at: new Date().toISOString(),
+  };
+}
+
+async function generateWithOpenAI(input: {
+  kind: RecommendationKind;
+  payload: Record<string, unknown>;
+  apiKey: string;
+  model: string;
+}) {
+  let response: Response;
+  try {
+    response = await fetch("https://api.openai.com/v1/responses", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${input.apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: input.model,
+        input: [
+          {
+            role: "system",
+            content:
+              "You are Soru's nutrition-aware food recommendation assistant. Give practical chef-ready food recommendations, not medical advice.",
+          },
+          {
+            role: "user",
+            content: promptFor(input.kind, input.payload),
+          },
+        ],
+        text: {
+          format: {
+            type: "json_schema",
+            name: "soru_food_recommendation",
+            strict: true,
+            schema: recommendationSchema,
+          },
+        },
+      }),
+    });
+  } catch (error) {
+    console.error("OpenAI network error", error);
+    throw new Error("openai_unavailable");
+  }
+
+  if (!response.ok) {
+    const detail = await response.text();
+    console.error("OpenAI request failed", {
+      status: response.status,
+      kind: input.kind,
+      detail,
+    });
+    throw new Error("openai_unavailable");
+  }
+
+  const result = await response.json();
+  const outputText = extractOutputText(result);
+  if (!outputText) throw new Error("openai_empty_response");
+
+  return {
+    recommendation: JSON.parse(outputText),
+    model: input.model,
+    provider: "openai",
+    generated_at: new Date().toISOString(),
+  };
+}
+
 Deno.serve(async (request) => {
   if (request.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   if (request.method !== "POST") {
@@ -192,16 +344,6 @@ Deno.serve(async (request) => {
     );
   }
 
-  const apiKey = env("OPENAI_API_KEY");
-  if (!apiKey) {
-    return Response.json(
-      {
-        error: "AI recommendations are not connected yet. Add OPENAI_API_KEY in Supabase secrets.",
-      },
-      { status: 503, headers: corsHeaders },
-    );
-  }
-
   let body: AiPayload;
   try {
     body = await request.json();
@@ -217,88 +359,54 @@ Deno.serve(async (request) => {
   }
 
   const payload = normalizePayload(body.kind, body.payload || {});
-  const model = env("OPENAI_MODEL") || "gpt-4o-mini";
+  const geminiApiKey = env("GEMINI_API_KEY");
+  const openAiApiKey = env("OPENAI_API_KEY");
 
-  let response: Response;
-  try {
-    response = await fetch("https://api.openai.com/v1/responses", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
+  if (!geminiApiKey && !openAiApiKey) {
+    return Response.json(
+      {
+        error:
+          "AI recommendations are not connected yet. Add GEMINI_API_KEY or OPENAI_API_KEY in Supabase secrets.",
       },
-      body: JSON.stringify({
-        model,
-        input: [
-          {
-            role: "system",
-            content:
-              "You are Soru's nutrition-aware food recommendation assistant. Give practical chef-ready food recommendations, not medical advice.",
-          },
-          {
-            role: "user",
-            content: promptFor(body.kind, payload),
-          },
-        ],
-        text: {
-          format: {
-            type: "json_schema",
-            name: "soru_food_recommendation",
-            strict: true,
-            schema: recommendationSchema,
-          },
-        },
+      { status: 503, headers: corsHeaders },
+    );
+  }
+
+  try {
+    if (geminiApiKey) {
+      return Response.json(
+        await generateWithGemini({
+          kind: body.kind,
+          payload,
+          apiKey: geminiApiKey,
+          model: env("GEMINI_MODEL") || "gemini-2.0-flash",
+        }),
+        { headers: corsHeaders },
+      );
+    }
+
+    return Response.json(
+      await generateWithOpenAI({
+        kind: body.kind,
+        payload,
+        apiKey: openAiApiKey,
+        model: env("OPENAI_MODEL") || "gpt-4o-mini",
       }),
-    });
-  } catch (error) {
-    console.error("OpenAI network error", error);
-    return Response.json(
-      {
-        error:
-          "AI recommendations are temporarily unavailable. Soru can still save your request for follow-up.",
-      },
-      { status: 503, headers: corsHeaders },
-    );
-  }
-
-  if (!response.ok) {
-    const detail = await response.text();
-    console.error("OpenAI request failed", {
-      status: response.status,
-      kind: body.kind,
-      detail,
-    });
-    return Response.json(
-      {
-        error:
-          "AI recommendations are temporarily unavailable. Soru saved requests can still be reviewed by the team.",
-      },
-      { status: 503, headers: corsHeaders },
-    );
-  }
-
-  const result = await response.json();
-  const outputText = extractOutputText(result);
-  if (!outputText) {
-    return Response.json(
-      { error: "AI did not return a recommendation." },
-      { status: 502, headers: corsHeaders },
-    );
-  }
-
-  try {
-    return Response.json(
-      {
-        recommendation: JSON.parse(outputText),
-        model,
-        generated_at: new Date().toISOString(),
-      },
       { headers: corsHeaders },
     );
-  } catch {
-    return Response.json(
-      { error: "AI returned invalid recommendation JSON." },
-      { status: 502, headers: corsHeaders },
-    );
+  } catch (error) {
+    console.error("AI recommendation failed", {
+      provider: geminiApiKey ? "gemini" : "openai",
+      kind: body.kind,
+      error,
+    });
   }
+
+  return Response.json(
+    {
+      error:
+        "AI recommendations are temporarily unavailable. Soru saved requests can still be reviewed by the team.",
+    },
+    { status: 503, headers: corsHeaders },
+  );
 });
