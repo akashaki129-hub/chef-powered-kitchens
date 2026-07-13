@@ -72,6 +72,17 @@ const recommendationSchema = {
   },
 };
 
+function geminiCompatibleSchema(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map((item) => geminiCompatibleSchema(item));
+  if (!value || typeof value !== "object") return value;
+
+  return Object.fromEntries(
+    Object.entries(value as Record<string, unknown>)
+      .filter(([key]) => key !== "additionalProperties")
+      .map(([key, nestedValue]) => [key, geminiCompatibleSchema(nestedValue)]),
+  );
+}
+
 function env(name: string) {
   return Deno.env.get(name)?.trim() || "";
 }
@@ -213,7 +224,7 @@ async function generateWithGemini(input: {
           generationConfig: {
             temperature: 0.45,
             responseMimeType: "application/json",
-            responseSchema: recommendationSchema,
+            responseSchema: geminiCompatibleSchema(recommendationSchema),
           },
         }),
       },
@@ -317,7 +328,7 @@ async function generateWithGeminiFallback(input: {
   const configuredModel = env("GEMINI_MODEL");
   const models = configuredModel
     ? [configuredModel]
-    : ["gemini-2.5-flash", "gemini-2.5-flash-lite"];
+    : ["gemini-flash-latest", "gemini-flash-lite-latest", "gemini-2.0-flash-lite"];
 
   let lastError: unknown;
   for (const model of models) {
