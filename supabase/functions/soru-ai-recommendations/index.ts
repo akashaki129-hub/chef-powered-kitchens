@@ -309,6 +309,34 @@ async function generateWithOpenAI(input: {
   };
 }
 
+async function generateWithGeminiFallback(input: {
+  kind: RecommendationKind;
+  payload: Record<string, unknown>;
+  apiKey: string;
+}) {
+  const configuredModel = env("GEMINI_MODEL");
+  const models = configuredModel
+    ? [configuredModel]
+    : ["gemini-2.5-flash", "gemini-2.5-flash-lite"];
+
+  let lastError: unknown;
+  for (const model of models) {
+    try {
+      return await generateWithGemini({
+        kind: input.kind,
+        payload: input.payload,
+        apiKey: input.apiKey,
+        model,
+      });
+    } catch (error) {
+      lastError = error;
+      console.error("Gemini model attempt failed", { model, kind: input.kind, error });
+    }
+  }
+
+  throw lastError instanceof Error ? lastError : new Error("gemini_unavailable");
+}
+
 Deno.serve(async (request) => {
   if (request.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   if (request.method !== "POST") {
@@ -375,11 +403,10 @@ Deno.serve(async (request) => {
   try {
     if (geminiApiKey) {
       return Response.json(
-        await generateWithGemini({
+        await generateWithGeminiFallback({
           kind: body.kind,
           payload,
           apiKey: geminiApiKey,
-          model: env("GEMINI_MODEL") || "gemini-2.0-flash",
         }),
         { headers: corsHeaders },
       );
