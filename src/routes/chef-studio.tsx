@@ -32,6 +32,7 @@ import {
   type Profile,
   type Subscription,
 } from "@/lib/soru-app";
+import { getPhoneValidationError, normalizePhone } from "@/lib/validation";
 
 export const Route = createFileRoute("/chef-studio")({
   ssr: false,
@@ -322,10 +323,16 @@ function EnrollmentSection({
       toast.error("Please complete your name, phone, email, and city.");
       return;
     }
+    const phoneError = getPhoneValidationError(form.phone);
+    if (phoneError) {
+      toast.error(phoneError);
+      return;
+    }
     setSaving(true);
     const payload = {
       user_id: userId,
       ...form,
+      phone: normalizePhone(form.phone),
       documents_ready: documents,
       support_needed: support,
       application_status: status,
@@ -380,9 +387,13 @@ function EnrollmentSection({
           </Field>
           <Field label="Mobile number">
             <input
+              type="tel"
+              inputMode="tel"
+              autoComplete="tel"
               value={form.phone}
               onChange={(e) => setForm({ ...form, phone: e.target.value })}
               className="app-input"
+              placeholder="+91 98765 43210"
             />
           </Field>
           <Field label="Email">

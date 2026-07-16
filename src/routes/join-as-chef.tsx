@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { z } from "zod";
 import { BrandLogo } from "@/components/brand-logo";
+import { isValidPhoneNumber, normalizePhone } from "@/lib/validation";
 
 export const Route = createFileRoute("/join-as-chef")({
   head: () => ({
@@ -28,7 +29,10 @@ const roleOptions = [
 
 const schema = z.object({
   name: z.string().trim().min(2, "Name is required").max(100),
-  phone: z.string().trim().min(7, "Valid phone required").max(20),
+  phone: z
+    .string()
+    .trim()
+    .refine(isValidPhoneNumber, "Please enter a real mobile number, not a placeholder."),
   email: z.string().trim().email("Valid email required").max(255),
   role: z.enum(["chef", "homemaker", "culinary_student", "professional_chef", "freelancer"]),
   comments: z.string().trim().max(1500, "Please keep your note under 1,500 characters").optional(),
@@ -55,6 +59,7 @@ function ChefEnrollPage() {
     setLoading(true);
     const { error } = await supabase.from("chef_enrollments").insert({
       ...parsed.data,
+      phone: normalizePhone(parsed.data.phone),
       comments: parsed.data.comments || null,
     });
     setLoading(false);

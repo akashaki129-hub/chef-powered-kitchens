@@ -1,9 +1,23 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Activity, BarChart3, Bell, Download, Eye, Search, Users } from "lucide-react";
+import {
+  Activity,
+  BarChart3,
+  Bell,
+  ChefHat,
+  ClipboardList,
+  Download,
+  Eye,
+  PackageCheck,
+  Search,
+  Sparkles,
+  Users,
+} from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { BrandLogo } from "@/components/brand-logo";
+import { db } from "@/lib/soru-app";
+import { getPhoneValidationError } from "@/lib/validation";
 
 export const Route = createFileRoute("/admin")({
   ssr: false,
@@ -76,7 +90,95 @@ type NotificationEventRow = {
   created_at: string;
 };
 
-type AdminTab = "chefs" | "customers" | "waitlist" | "research";
+type AppProfileRow = {
+  user_id: string;
+  created_at: string;
+  full_name: string;
+  phone: string | null;
+  city: string | null;
+  default_role: string;
+};
+
+type ChefApplicationRow = {
+  id: string;
+  created_at: string;
+  submitted_at: string | null;
+  application_status: string;
+  full_name: string;
+  phone: string;
+  email: string;
+  city: string;
+  cooking_role: string;
+  current_step: number;
+};
+
+type AppChefProfileRow = {
+  id: string;
+  created_at: string;
+  display_name: string;
+  kitchen_name: string | null;
+  chef_type: string;
+  city: string;
+  fssai_status: string;
+  verification_status: string;
+  is_listed: boolean;
+};
+
+type AppMenuItemRow = {
+  id: string;
+  created_at: string;
+  chef_profile_id: string;
+  name: string;
+  category: string;
+  price_inr: number;
+  is_active: boolean;
+};
+
+type AppOrderRow = {
+  id: string;
+  created_at: string;
+  order_type: string;
+  quantity: number;
+  delivery_city: string;
+  status: string;
+};
+
+type AppSubscriptionRow = {
+  id: string;
+  created_at: string;
+  plan_type: string;
+  meals_per_week: number;
+  budget_range: string;
+  status: string;
+};
+
+type AppMealPlanRow = {
+  id: string;
+  created_at: string;
+  goal: string;
+  diet_type: string;
+  city: string;
+  status: string;
+};
+
+type AppLunchboxRow = {
+  id: string;
+  created_at: string;
+  child_age: string | null;
+  city: string;
+  status: string;
+};
+
+type OperationRow = {
+  id: string;
+  created_at: string;
+  type: string;
+  title: string;
+  detail: string;
+  status: string;
+};
+
+type AdminTab = "chefs" | "customers" | "waitlist" | "research" | "operations";
 type EnrollmentRow = ChefRow | CustRow | WaitlistRow;
 
 const STATEMENT_LABELS: Record<string, string> = {
@@ -134,6 +236,14 @@ function AdminPage() {
   const [research, setResearch] = useState<ResearchRow[]>([]);
   const [visits, setVisits] = useState<SiteVisitRow[]>([]);
   const [notificationEvents, setNotificationEvents] = useState<NotificationEventRow[]>([]);
+  const [appProfiles, setAppProfiles] = useState<AppProfileRow[]>([]);
+  const [chefApplications, setChefApplications] = useState<ChefApplicationRow[]>([]);
+  const [appChefProfiles, setAppChefProfiles] = useState<AppChefProfileRow[]>([]);
+  const [menuItems, setMenuItems] = useState<AppMenuItemRow[]>([]);
+  const [orders, setOrders] = useState<AppOrderRow[]>([]);
+  const [subscriptions, setSubscriptions] = useState<AppSubscriptionRow[]>([]);
+  const [mealPlans, setMealPlans] = useState<AppMealPlanRow[]>([]);
+  const [lunchboxes, setLunchboxes] = useState<AppLunchboxRow[]>([]);
   const [q, setQ] = useState("");
   const [audienceFilter, setAudienceFilter] = useState("all");
   const [cityFilter, setCityFilter] = useState("all");
@@ -159,7 +269,7 @@ function AdminPage() {
       }
 
       const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
-      const [c, cu, w, r, v, n] = await Promise.all([
+      const [c, cu, w, r, v, n, p, ca, cp, m, o, s, mp, lb] = await Promise.all([
         supabase.from("chef_enrollments").select("*").order("created_at", { ascending: false }),
         supabase.from("customer_enrollments").select("*").order("created_at", { ascending: false }),
         supabase.from("waitlist_entries").select("*").order("created_at", { ascending: false }),
@@ -177,6 +287,42 @@ function AdminPage() {
           .select("id,event_type,email_status,whatsapp_status,processed_at,created_at")
           .order("created_at", { ascending: false })
           .limit(100),
+        db
+          .from("profiles")
+          .select("user_id,created_at,full_name,phone,city,default_role")
+          .order("created_at", { ascending: false }),
+        db
+          .from("chef_applications")
+          .select(
+            "id,created_at,submitted_at,application_status,full_name,phone,email,city,cooking_role,current_step",
+          )
+          .order("created_at", { ascending: false }),
+        db
+          .from("chef_profiles")
+          .select(
+            "id,created_at,display_name,kitchen_name,chef_type,city,fssai_status,verification_status,is_listed",
+          )
+          .order("created_at", { ascending: false }),
+        db
+          .from("chef_menu_items")
+          .select("id,created_at,chef_profile_id,name,category,price_inr,is_active")
+          .order("created_at", { ascending: false }),
+        db
+          .from("customer_orders")
+          .select("id,created_at,order_type,quantity,delivery_city,status")
+          .order("created_at", { ascending: false }),
+        db
+          .from("customer_subscriptions")
+          .select("id,created_at,plan_type,meals_per_week,budget_range,status")
+          .order("created_at", { ascending: false }),
+        db
+          .from("meal_plan_requests")
+          .select("id,created_at,goal,diet_type,city,status")
+          .order("created_at", { ascending: false }),
+        db
+          .from("lunchbox_requests")
+          .select("id,created_at,child_age,city,status")
+          .order("created_at", { ascending: false }),
       ]);
       setStatus("ok");
       if (c.error) toast.error(c.error.message);
@@ -191,11 +337,27 @@ function AdminPage() {
       else setVisits(v.data as SiteVisitRow[]);
       if (n.error) toast.error(n.error.message);
       else setNotificationEvents(n.data as NotificationEventRow[]);
+      if (p.error) toast.error(p.error.message);
+      else setAppProfiles(p.data as AppProfileRow[]);
+      if (ca.error) toast.error(ca.error.message);
+      else setChefApplications(ca.data as ChefApplicationRow[]);
+      if (cp.error) toast.error(cp.error.message);
+      else setAppChefProfiles(cp.data as AppChefProfileRow[]);
+      if (m.error) toast.error(m.error.message);
+      else setMenuItems(m.data as AppMenuItemRow[]);
+      if (o.error) toast.error(o.error.message);
+      else setOrders(o.data as AppOrderRow[]);
+      if (s.error) toast.error(s.error.message);
+      else setSubscriptions(s.data as AppSubscriptionRow[]);
+      if (mp.error) toast.error(mp.error.message);
+      else setMealPlans(mp.data as AppMealPlanRow[]);
+      if (lb.error) toast.error(lb.error.message);
+      else setLunchboxes(lb.data as AppLunchboxRow[]);
     })();
   }, []);
 
   const standardRows: EnrollmentRow[] =
-    tab === "chefs" ? chefs : tab === "customers" ? customers : waitlist;
+    tab === "chefs" ? chefs : tab === "customers" ? customers : tab === "waitlist" ? waitlist : [];
   const filteredStandardRows = standardRows.filter(
     (row) =>
       !q ||
@@ -238,6 +400,93 @@ function AdminPage() {
     });
   }, [audienceFilter, cityFilter, q, research]);
 
+  const operationRows = useMemo<OperationRow[]>(() => {
+    const rows: OperationRow[] = [
+      ...chefApplications.map((row) => ({
+        id: row.id,
+        created_at: row.created_at,
+        type: "Chef application",
+        title: row.full_name,
+        detail: `${formatLabel(row.cooking_role)} · ${row.city} · Step ${row.current_step}/5`,
+        status: row.application_status,
+      })),
+      ...appChefProfiles.map((row) => ({
+        id: row.id,
+        created_at: row.created_at,
+        type: "Chef profile",
+        title: row.kitchen_name || row.display_name,
+        detail: `${formatLabel(row.chef_type)} · ${row.city} · FSSAI ${formatLabel(row.fssai_status)}`,
+        status: row.is_listed ? row.verification_status : "not listed",
+      })),
+      ...menuItems.map((row) => ({
+        id: row.id,
+        created_at: row.created_at,
+        type: "Menu item",
+        title: row.name,
+        detail: `${formatLabel(row.category)} · ₹${row.price_inr.toLocaleString("en-IN")}`,
+        status: row.is_active ? "active" : "inactive",
+      })),
+      ...orders.map((row) => ({
+        id: row.id,
+        created_at: row.created_at,
+        type: "Order",
+        title: formatLabel(row.order_type),
+        detail: `${row.delivery_city} · Qty ${row.quantity}`,
+        status: row.status,
+      })),
+      ...subscriptions.map((row) => ({
+        id: row.id,
+        created_at: row.created_at,
+        type: "Subscription",
+        title: row.plan_type,
+        detail: `${row.meals_per_week} meals/week · ${row.budget_range}`,
+        status: row.status,
+      })),
+      ...mealPlans.map((row) => ({
+        id: row.id,
+        created_at: row.created_at,
+        type: "Meal plan",
+        title: row.goal,
+        detail: `${formatLabel(row.diet_type)} · ${row.city}`,
+        status: row.status,
+      })),
+      ...lunchboxes.map((row) => ({
+        id: row.id,
+        created_at: row.created_at,
+        type: "Lunchbox",
+        title: row.child_age ? `Age ${row.child_age}` : "Lunchbox request",
+        detail: row.city,
+        status: row.status,
+      })),
+      ...appProfiles.map((row) => ({
+        id: row.user_id,
+        created_at: row.created_at,
+        type: "Account",
+        title: row.full_name,
+        detail: `${formatLabel(row.default_role)} · ${row.city || "City not added"}`,
+        status: row.phone ? "profile contact added" : "profile contact missing",
+      })),
+    ];
+    const query = q.trim().toLowerCase();
+    return rows
+      .filter(
+        (row) =>
+          !query ||
+          [row.type, row.title, row.detail, row.status].join(" ").toLowerCase().includes(query),
+      )
+      .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+  }, [
+    appChefProfiles,
+    appProfiles,
+    chefApplications,
+    lunchboxes,
+    mealPlans,
+    menuItems,
+    orders,
+    q,
+    subscriptions,
+  ]);
+
   const cities = Array.from(new Set(research.map((row) => row.city))).sort();
   const todayKey = indiaDateKey(new Date());
   const todayVisits = visits.filter(
@@ -260,6 +509,22 @@ function AdminPage() {
   }
 
   function exportCsv() {
+    if (tab === "operations") {
+      const headers: Array<keyof OperationRow> = [
+        "created_at",
+        "type",
+        "title",
+        "detail",
+        "status",
+      ];
+      downloadCsv(
+        headers,
+        operationRows.map((row) => headers.map((header) => String(row[header] ?? ""))),
+        "app-operations",
+      );
+      return;
+    }
+
     if (tab === "research") {
       const headers: Array<keyof ResearchRow> = [
         "created_at",
@@ -350,7 +615,7 @@ function AdminPage() {
               Soru admin
             </p>
             <h1 className="mt-2 font-display text-4xl font-medium tracking-tight">
-              Enrollments & market signals
+              Enrollments, app operations & market signals
             </h1>
           </div>
           {tab === "research" && (
@@ -406,6 +671,9 @@ function AdminPage() {
           <TabBtn active={tab === "waitlist"} onClick={() => changeTab("waitlist")}>
             Waitlist ({waitlist.length})
           </TabBtn>
+          <TabBtn active={tab === "operations"} onClick={() => changeTab("operations")}>
+            App live ({operationRows.length})
+          </TabBtn>
           <TabBtn active={tab === "research"} onClick={() => changeTab("research")}>
             Research ({research.length})
           </TabBtn>
@@ -460,6 +728,18 @@ function AdminPage() {
 
         {tab === "research" ? (
           <ResearchDashboard rows={filteredResearch} />
+        ) : tab === "operations" ? (
+          <OperationsDashboard
+            profiles={appProfiles}
+            chefApplications={chefApplications}
+            chefProfiles={appChefProfiles}
+            menuItems={menuItems}
+            orders={orders}
+            subscriptions={subscriptions}
+            mealPlans={mealPlans}
+            lunchboxes={lunchboxes}
+            rows={operationRows}
+          />
         ) : (
           <EnrollmentTable tab={tab} rows={filteredStandardRows} />
         )}
@@ -469,6 +749,201 @@ function AdminPage() {
 }
 
 function TrafficCard({
+  icon: Icon,
+  label,
+  value,
+  detail,
+}: {
+  icon: typeof Users;
+  label: string;
+  value: number;
+  detail: string;
+}) {
+  return (
+    <article className="rounded-2xl border border-border bg-card p-5 shadow-[var(--shadow-soft)]">
+      <div className="flex items-center justify-between gap-3">
+        <span className="text-xs font-semibold uppercase tracking-[.12em] text-muted-foreground">
+          {label}
+        </span>
+        <Icon className="size-4 text-primary" />
+      </div>
+      <div className="mt-4 font-display text-4xl font-medium">{value.toLocaleString("en-IN")}</div>
+      <p className="mt-1 text-xs text-muted-foreground">{detail}</p>
+    </article>
+  );
+}
+
+function OperationsDashboard({
+  profiles,
+  chefApplications,
+  chefProfiles,
+  menuItems,
+  orders,
+  subscriptions,
+  mealPlans,
+  lunchboxes,
+  rows,
+}: {
+  profiles: AppProfileRow[];
+  chefApplications: ChefApplicationRow[];
+  chefProfiles: AppChefProfileRow[];
+  menuItems: AppMenuItemRow[];
+  orders: AppOrderRow[];
+  subscriptions: AppSubscriptionRow[];
+  mealPlans: AppMealPlanRow[];
+  lunchboxes: AppLunchboxRow[];
+  rows: OperationRow[];
+}) {
+  const customerAccounts = profiles.filter((row) => row.default_role === "customer").length;
+  const chefAccounts = profiles.filter((row) => row.default_role === "chef").length;
+  const submittedChefApplications = chefApplications.filter(
+    (row) => row.application_status !== "draft",
+  ).length;
+  const visibleChefs = chefProfiles.filter((row) => row.is_listed).length;
+  const activeMenus = menuItems.filter((row) => row.is_active).length;
+  const openOrders = orders.filter(
+    (row) => !["delivered", "cancelled"].includes(row.status),
+  ).length;
+  const openSubscriptions = subscriptions.filter((row) =>
+    ["pending", "matched", "active"].includes(row.status),
+  ).length;
+
+  return (
+    <div className="mt-7 space-y-6">
+      <div className="rounded-3xl bg-[color:var(--ink)] p-6 text-white md:p-8">
+        <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+          <div>
+            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[.16em] text-[color:var(--saffron)]">
+              <PackageCheck className="size-4" /> Live app operations
+            </div>
+            <h2 className="mt-3 font-display text-3xl font-medium md:text-4xl">
+              Real activity inside Soru
+            </h2>
+          </div>
+          <p className="max-w-lg text-sm leading-6 text-white/55">
+            This dashboard only shows records stored in Supabase. Empty sections mean no live data
+            has been submitted yet.
+          </p>
+        </div>
+        <div className="mt-7 grid gap-px overflow-hidden rounded-2xl border border-white/10 bg-white/10 sm:grid-cols-2 xl:grid-cols-4">
+          <DarkStat label="Total app accounts" value={profiles.length} />
+          <DarkStat label="Customer accounts" value={customerAccounts} />
+          <DarkStat label="Chef accounts" value={chefAccounts} />
+          <DarkStat label="Chef applications" value={chefApplications.length} />
+        </div>
+      </div>
+
+      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <OperationMetric
+          icon={ChefHat}
+          label="Submitted applications"
+          value={submittedChefApplications}
+          detail={`${chefApplications.length - submittedChefApplications} draft applications`}
+        />
+        <OperationMetric
+          icon={Users}
+          label="Listed chef profiles"
+          value={visibleChefs}
+          detail={`${chefProfiles.length} chef profiles total`}
+        />
+        <OperationMetric
+          icon={ClipboardList}
+          label="Active menu items"
+          value={activeMenus}
+          detail={`${menuItems.length} menu items total`}
+        />
+        <OperationMetric
+          icon={PackageCheck}
+          label="Open order requests"
+          value={openOrders}
+          detail={`${orders.length} order requests total`}
+        />
+        <OperationMetric
+          icon={BarChart3}
+          label="Open subscriptions"
+          value={openSubscriptions}
+          detail={`${subscriptions.length} subscription requests total`}
+        />
+        <OperationMetric
+          icon={Sparkles}
+          label="Meal-plan requests"
+          value={mealPlans.length}
+          detail="Personalised nutrition intake"
+        />
+        <OperationMetric
+          icon={Activity}
+          label="Lunchbox requests"
+          value={lunchboxes.length}
+          detail="Kids lunchbox customisation"
+        />
+        <OperationMetric
+          icon={Bell}
+          label="Latest live records"
+          value={rows.length}
+          detail="Accounts + operational activity"
+        />
+      </section>
+
+      <div className="overflow-hidden rounded-2xl border border-border bg-card">
+        <div className="border-b border-border px-5 py-4">
+          <h2 className="font-display text-2xl font-medium">Live activity log</h2>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Newest accounts, applications, profiles, menus, orders, subscriptions, and requests.
+          </p>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[860px] text-left text-sm">
+            <thead className="bg-muted/40 text-xs uppercase tracking-wider text-muted-foreground">
+              <tr>
+                <th className="px-4 py-3">Date</th>
+                <th className="px-4 py-3">Type</th>
+                <th className="px-4 py-3">Record</th>
+                <th className="px-4 py-3">Detail</th>
+                <th className="px-4 py-3">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="px-4 py-12 text-center text-muted-foreground">
+                    No live app activity matches this view yet.
+                  </td>
+                </tr>
+              ) : (
+                rows.slice(0, 120).map((row) => (
+                  <tr key={`${row.type}-${row.id}`} className="border-t border-border">
+                    <td className="whitespace-nowrap px-4 py-4 text-xs text-muted-foreground">
+                      {new Date(row.created_at).toLocaleString()}
+                    </td>
+                    <td className="px-4 py-4 font-medium">{row.type}</td>
+                    <td className="max-w-xs px-4 py-4">{row.title}</td>
+                    <td className="max-w-sm px-4 py-4 text-muted-foreground">{row.detail}</td>
+                    <td className="px-4 py-4">
+                      <StatusBadge>{formatLabel(row.status)}</StatusBadge>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function DarkStat({ label, value }: { label: string; value: number }) {
+  return (
+    <div className="bg-[color:var(--ink)] p-5 md:p-6">
+      <div className="font-display text-4xl text-[color:var(--saffron)]">
+        {value.toLocaleString("en-IN")}
+      </div>
+      <div className="mt-2 text-sm font-semibold">{label}</div>
+    </div>
+  );
+}
+
+function OperationMetric({
   icon: Icon,
   label,
   value,
@@ -619,9 +1094,11 @@ function ResearchDashboard({ rows }: { rows: ResearchRow[] }) {
                     </td>
                     <td className="px-4 py-4">{row.city}</td>
                     <td className="max-w-sm px-4 py-4">
-                      <div className="font-medium">{row.full_name || "Legacy response"}</div>
+                      <div className="font-medium">
+                        {row.full_name || "Not captured in earlier response"}
+                      </div>
                       <div className="mt-1 text-xs text-muted-foreground">
-                        {row.contact || "No contact shared"}
+                        {row.contact || "Not captured in earlier response"}
                       </div>
                     </td>
                     <td className="max-w-sm px-4 py-4">
@@ -647,7 +1124,7 @@ function EnrollmentTable({
   tab,
   rows,
 }: {
-  tab: Exclude<AdminTab, "research">;
+  tab: Exclude<AdminTab, "research" | "operations">;
   rows: EnrollmentRow[];
 }) {
   return (
@@ -669,7 +1146,7 @@ function EnrollmentTable({
           {rows.length === 0 ? (
             <tr>
               <td colSpan={6} className="px-4 py-10 text-center text-muted-foreground">
-                No submissions yet.
+                No live submissions match this view yet.
               </td>
             </tr>
           ) : (
@@ -679,7 +1156,14 @@ function EnrollmentTable({
                   {new Date(row.created_at).toLocaleString()}
                 </td>
                 <td className="px-4 py-3 font-medium">{row.name}</td>
-                <td className="px-4 py-3">{row.phone}</td>
+                <td className="px-4 py-3">
+                  <div>{row.phone}</div>
+                  {getPhoneValidationError(row.phone) && (
+                    <span className="mt-1 inline-flex rounded-full bg-destructive/10 px-2 py-0.5 text-[0.68rem] font-semibold text-destructive">
+                      Review phone
+                    </span>
+                  )}
+                </td>
                 <td className="px-4 py-3">{row.email}</td>
                 <td className="px-4 py-3">{getEnrollmentCategory(row, tab)}</td>
                 <td className="max-w-sm px-4 py-3 text-muted-foreground">{row.comments || "—"}</td>
@@ -689,6 +1173,14 @@ function EnrollmentTable({
         </tbody>
       </table>
     </div>
+  );
+}
+
+function StatusBadge({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="inline-flex rounded-full bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">
+      {children}
+    </span>
   );
 }
 
@@ -834,7 +1326,10 @@ function getEnrollmentValue(row: EnrollmentRow, header: string) {
   return "";
 }
 
-function getEnrollmentCategory(row: EnrollmentRow, tab: Exclude<AdminTab, "research">) {
+function getEnrollmentCategory(
+  row: EnrollmentRow,
+  tab: Exclude<AdminTab, "research" | "operations">,
+) {
   if (tab === "chefs" && "role" in row) return formatLabel(row.role);
   if (tab === "customers" && "preferred_service" in row) return row.preferred_service;
   if (tab === "waitlist" && "city" in row && "role" in row)

@@ -37,6 +37,7 @@ import {
   type Subscription,
   upsertProfile,
 } from "@/lib/soru-app";
+import { getPhoneValidationError } from "@/lib/validation";
 
 export const Route = createFileRoute("/app")({
   ssr: false,
@@ -362,6 +363,13 @@ function ProfileCompletionCard({
       toast.error("Please add your name and city.");
       return;
     }
+    if (form.phone.trim()) {
+      const phoneError = getPhoneValidationError(form.phone);
+      if (phoneError) {
+        toast.error(phoneError);
+        return;
+      }
+    }
     setSaving(true);
     const { error } = await upsertProfile({
       userId,
@@ -401,10 +409,13 @@ function ProfileCompletionCard({
             placeholder="Full name"
           />
           <input
+            type="tel"
+            inputMode="tel"
+            autoComplete="tel"
             value={form.phone}
             onChange={(e) => setForm({ ...form, phone: e.target.value })}
             className="app-input bg-background"
-            placeholder="Phone"
+            placeholder="+91 98765 43210"
           />
           <input
             required

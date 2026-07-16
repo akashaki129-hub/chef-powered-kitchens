@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { normalizePhone } from "@/lib/validation";
 import type { User } from "@supabase/supabase-js";
 
 type DbError = { message: string } | null;
@@ -352,7 +353,7 @@ export async function upsertProfile(input: ProfileInput) {
     {
       user_id: input.userId,
       full_name: input.fullName.trim(),
-      phone: input.phone?.trim() || null,
+      phone: input.phone ? normalizePhone(input.phone) || null : null,
       city: input.city?.trim() || null,
       default_role: input.defaultRole,
     },
