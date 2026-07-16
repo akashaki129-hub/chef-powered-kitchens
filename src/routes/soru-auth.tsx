@@ -6,11 +6,12 @@ import { toast } from "sonner";
 import { BrandLogo } from "@/components/brand-logo";
 import { supabase } from "@/integrations/supabase/client";
 import { ensureProfileForUser, type AppRole, upsertProfile } from "@/lib/soru-app";
+import { getPhoneValidationError, normalizePhone } from "@/lib/validation";
 
 export const Route = createFileRoute("/soru-auth")({
   ssr: false,
   validateSearch: (search: Record<string, unknown>) => ({
-    role: search.role === "chef" || search.role === "both" ? search.role : "customer",
+    role: search.role === "chef" ? "chef" : "customer",
   }),
   head: () => ({ meta: [{ title: "Enter Soru — Customer & Chef App" }] }),
   component: SoruAuthPage,
@@ -37,7 +38,7 @@ function SoruAuthPage() {
           profile?.default_role ||
           (data.session.user.user_metadata?.default_role as AppRole | undefined) ||
           role;
-        navigate({ to: preferredRole === "chef" ? "/chef-studio" : "/app" });
+        navigate({ to: dashboardFor(preferredRole, role) });
       });
     });
   }, [navigate, role]);
@@ -52,15 +53,22 @@ function SoruAuthPage() {
         setLoading(false);
         return;
       }
+      const phoneError = getPhoneValidationError(phone);
+      if (phoneError) {
+        toast.error(phoneError);
+        setLoading(false);
+        return;
+      }
+      const cleanPhone = normalizePhone(phone);
 
       const { data, error } = await supabase.auth.signUp({
         email: email.trim(),
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}${role === "chef" ? "/chef-studio" : "/app"}`,
+          emailRedirectTo: `${window.location.origin}${dashboardFor(role, role)}`,
           data: {
             full_name: fullName.trim(),
-            phone: phone.trim(),
+            phone: cleanPhone,
             city: city.trim(),
             default_role: role,
           },
@@ -81,12 +89,12 @@ function SoruAuthPage() {
         await upsertProfile({
           userId: data.user.id,
           fullName,
-          phone,
+          phone: cleanPhone,
           city,
           defaultRole: role,
         });
         toast.success("Welcome to Soru.");
-        navigate({ to: role === "chef" ? "/chef-studio" : "/app" });
+        navigate({ to: dashboardFor(role, role) });
         return;
       }
 
@@ -111,7 +119,7 @@ function SoruAuthPage() {
     toast.success("Signed in.");
     setLoading(false);
     navigate({
-      to: (profile?.data?.default_role || preferredRole) === "chef" ? "/chef-studio" : "/app",
+      to: dashboardFor(profile?.data?.default_role || preferredRole, role),
     });
   }
 
@@ -140,11 +148,11 @@ function SoruAuthPage() {
               Soru App
             </p>
             <h1 className="mt-6 text-balance text-4xl font-semibold leading-none tracking-tight md:text-6xl">
-              One home for customers, chefs, and personalised food.
+              Choose your dedicated Soru dashboard.
             </h1>
             <p className="mt-5 max-w-xl text-lg text-muted-foreground">
-              Sign in to discover verified chefs, request subscriptions, build meal plans, order
-              lunchboxes, or create your chef profile and menu.
+              Customers discover verified chefs and personalised meal plans. Chefs apply, build
+              menus, manage FSSAI readiness, and grow their food business.
             </p>
 
             <div className="mt-8 grid max-w-2xl gap-3 sm:grid-cols-3">
@@ -222,7 +230,6 @@ function SoruAuthPage() {
                   >
                     <option value="customer">Customer</option>
                     <option value="chef">Chef / home cook</option>
-                    <option value="both">Both customer and cook</option>
                   </select>
                 </Field>
 
@@ -240,10 +247,14 @@ function SoruAuthPage() {
                     <div className="grid gap-4 sm:grid-cols-2">
                       <Field label="Mobile">
                         <input
+                          required
+                          type="tel"
+                          inputMode="tel"
+                          autoComplete="tel"
                           value={phone}
                           onChange={(e) => setPhone(e.target.value)}
                           className="app-input"
-                          placeholder="+91"
+                          placeholder="+91 98765 43210"
                         />
                       </Field>
                       <Field label="City">
@@ -302,6 +313,13 @@ function SoruAuthPage() {
       <style>{inputStyles}</style>
     </div>
   );
+}
+
+function dashboardFor(preferredRole: AppRole, selectedRole: AppRole) {
+  if (preferredRole === "chef" || (preferredRole === "both" && selectedRole === "chef")) {
+    return "/chef-studio";
+  }
+  return "/app";
 }
 
 function MiniCard({ icon, title, text }: { icon: React.ReactNode; title: string; text: string }) {

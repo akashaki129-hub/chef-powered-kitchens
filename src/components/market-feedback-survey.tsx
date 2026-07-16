@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
+import { getPhoneValidationError, normalizePhone } from "@/lib/validation";
 
 const DISMISSED_KEY = "soru_market_feedback_dismissed_at_v1";
 const SUBMITTED_KEY = "soru_market_feedback_submitted_v1";
@@ -228,9 +229,9 @@ export function MarketFeedbackSurvey() {
       setError("Enter your full name so we can identify your response.");
       return;
     }
-    const phoneDigits = contact.replace(/\D/g, "");
-    if (phoneDigits.length < 10 || phoneDigits.length > 15) {
-      setError("Enter a valid mobile number with 10 to 15 digits.");
+    const phoneError = getPhoneValidationError(contact);
+    if (phoneError) {
+      setError(phoneError);
       return;
     }
 
@@ -246,7 +247,7 @@ export function MarketFeedbackSurvey() {
       chef_support_needs: chefAudience ? chefSupport : [],
       city,
       full_name: fullName.trim(),
-      contact: contact.trim(),
+      contact: normalizePhone(contact),
       comments: comments.trim() || null,
       source: "homepage_feedback_popup",
     });
