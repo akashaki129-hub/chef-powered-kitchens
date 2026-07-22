@@ -304,6 +304,24 @@ function Hero() {
               Build your chef business
             </CTA>
           </div>
+          <a
+            href="https://app.soruindia.com/soru-auth"
+            className="mt-4 inline-flex w-full max-w-xl items-center justify-between gap-4 rounded-[1.35rem] border border-[color:var(--saffron)]/35 bg-white/10 px-5 py-4 text-left text-sm font-semibold text-white shadow-2xl shadow-black/20 backdrop-blur transition hover:-translate-y-0.5 hover:bg-white/15 sm:w-auto sm:min-w-[26rem]"
+            aria-label="Start ordering or earning in the Soru app"
+          >
+            <span className="inline-flex items-center gap-3">
+              <span className="grid size-10 place-items-center rounded-2xl bg-[color:var(--saffron)] text-[color:var(--ink)]">
+                <Smartphone className="size-5" />
+              </span>
+              <span>
+                <span className="block text-base">Start ordering / earning in Soru app</span>
+                <span className="mt-0.5 block text-xs font-medium text-white/55">
+                  Open the customer and chef app
+                </span>
+              </span>
+            </span>
+            <ArrowRight className="size-4 shrink-0 text-[color:var(--saffron)]" />
+          </a>
           <div className="mt-5">
             <p className="font-display text-lg font-medium text-white md:text-xl">
               Meals from <span className="text-[color:var(--saffron)]">₹99/order</span>
