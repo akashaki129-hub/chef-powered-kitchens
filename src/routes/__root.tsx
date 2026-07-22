@@ -16,6 +16,66 @@ import { Toaster } from "@/components/ui/sonner";
 import { SiteVisitTracker } from "@/components/site-visit-tracker";
 import { MobileAppInstaller } from "@/components/mobile-app-installer";
 
+const siteUrl = "https://www.soruindia.com";
+const siteDescription =
+  "Soru India is a chef-powered food services marketplace for affordable meals, home chef subscriptions, personalized nutrition plans, student lunchboxes, and verified skilled cooks across India.";
+const socialImage =
+  "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/75154ba5-3786-40f0-b5b1-fcd2fbc636da/id-preview-0fd83b53--d04faae7-e8d2-4360-be41-206ffa76e1be.lovable.app-1781610836987.png";
+const structuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": `${siteUrl}/#organization`,
+      name: "Soru",
+      alternateName: ["Soru India", "Soru food app", "Soru chef-powered meals"],
+      url: siteUrl,
+      logo: `${siteUrl}/soru-icon-512.png`,
+      email: "hello@soruindia.com",
+      sameAs: [
+        "https://www.instagram.com/soru.india/",
+        "https://www.linkedin.com/company/soru-india",
+      ],
+      description: siteDescription,
+    },
+    {
+      "@type": "WebSite",
+      "@id": `${siteUrl}/#website`,
+      name: "Soru India",
+      alternateName: "Soru",
+      url: siteUrl,
+      publisher: { "@id": `${siteUrl}/#organization` },
+      potentialAction: {
+        "@type": "SearchAction",
+        target: `${siteUrl}/?q={search_term_string}`,
+        "query-input": "required name=search_term_string",
+      },
+    },
+    {
+      "@type": "WebPage",
+      "@id": `${siteUrl}/#homepage`,
+      url: siteUrl,
+      name: "Soru India — Chef-powered meals, home chefs, and personalized nutrition",
+      isPartOf: { "@id": `${siteUrl}/#website` },
+      about: { "@id": `${siteUrl}/#organization` },
+      description: siteDescription,
+    },
+    {
+      "@type": "MobileApplication",
+      name: "Soru",
+      alternateName: "Soru India",
+      operatingSystem: "Web, iOS, Android",
+      applicationCategory: "FoodDeliveryApplication",
+      url: "https://app.soruindia.com",
+      offers: {
+        "@type": "Offer",
+        price: "0",
+        priceCurrency: "INR",
+      },
+    },
+  ],
+};
+
 function NotFoundComponent() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
@@ -86,39 +146,44 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "apple-mobile-web-app-status-bar-style", content: "default" },
       { name: "apple-mobile-web-app-title", content: "Soru" },
       { name: "mobile-web-app-capable", content: "yes" },
-      { title: "Soru — Every chef’s special, closer to home." },
+      { name: "application-name", content: "Soru India" },
+      { name: "robots", content: "index, follow, max-image-preview:large" },
+      { title: "Soru India — Every chef’s special, closer to home." },
       {
         name: "description",
-        content:
-          "India's chef-powered platform connecting talented cooks with people seeking healthy, trustworthy, and personalized meals.",
+        content: siteDescription,
       },
-      { property: "og:title", content: "Soru — Every chef’s special, closer to home." },
+      {
+        name: "keywords",
+        content:
+          "Soru, Soru India, Soru food app, chef meals India, home chef meals, personalized nutrition plans, student lunchbox India, verified home cooks",
+      },
+      { property: "og:site_name", content: "Soru India" },
+      { property: "og:title", content: "Soru India — Every chef’s special, closer to home." },
       {
         property: "og:description",
-        content:
-          "India's chef-powered platform connecting talented cooks with people seeking healthy, trustworthy, and personalized meals.",
+        content: siteDescription,
       },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: siteUrl },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "Soru — Every chef’s special, closer to home." },
+      { name: "twitter:title", content: "Soru India — Every chef’s special, closer to home." },
       {
         name: "twitter:description",
-        content:
-          "India's chef-powered platform connecting talented cooks with people seeking healthy, trustworthy, and personalized meals.",
+        content: siteDescription,
       },
       {
         property: "og:image",
-        content:
-          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/75154ba5-3786-40f0-b5b1-fcd2fbc636da/id-preview-0fd83b53--d04faae7-e8d2-4360-be41-206ffa76e1be.lovable.app-1781610836987.png",
+        content: socialImage,
       },
       {
         name: "twitter:image",
-        content:
-          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/75154ba5-3786-40f0-b5b1-fcd2fbc636da/id-preview-0fd83b53--d04faae7-e8d2-4360-be41-206ffa76e1be.lovable.app-1781610836987.png",
+        content: socialImage,
       },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
+      { rel: "sitemap", type: "application/xml", href: "/sitemap.xml" },
       { rel: "manifest", href: "/manifest.webmanifest" },
       { rel: "icon", href: "/soru-icon.svg", type: "image/svg+xml" },
       { rel: "apple-touch-icon", href: "/soru-icon-192.png" },
@@ -141,6 +206,10 @@ function RootShell({ children }: { children: ReactNode }) {
     <html lang="en">
       <head>
         <HeadContent />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        />
       </head>
       <body>
         {children}

@@ -32,13 +32,20 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Soru — Every chef’s special, closer to home." },
+      { title: "Soru India — Chef-powered meals and verified home chefs" },
       {
         name: "description",
         content:
-          "Soru is a chef-powered food services marketplace for affordable meals from verified chefs and income opportunities for skilled cooks.",
+          "Soru India is a chef-powered food services marketplace for affordable meals from verified chefs, personalized nutrition plans, student lunchboxes, and income opportunities for skilled cooks.",
+      },
+      { property: "og:title", content: "Soru India — Every chef’s special, closer to home." },
+      {
+        property: "og:description",
+        content:
+          "Discover Soru India for chef-made meals, verified home chefs, personalized nutrition plans, student lunchboxes, and chef-led food services.",
       },
     ],
+    links: [{ rel: "canonical", href: "https://www.soruindia.com/" }],
   }),
   component: Landing,
 });
